@@ -70,13 +70,38 @@ char food_eaten(Snake* snake, int* food_coordinates) {
 
 	if (food_coordinates[0] == snake->body[0].x && food_coordinates[1] == snake->body[0].y) {
 		is_food_eaten = 1;
+		snake->length++;
 	}
 	return is_food_eaten;
+}
+
+char check_collision(WINDOW *win, Snake* snake) {
+	char collision;
+	if (snake->body[0].x == getmaxx(win) - 2 || snake->body[0].x < 1 || snake->body[0].y == getmaxy(win) - 2 || snake->body[0].y < 1) {
+		collision = 1;
+	}
+	else {
+		collision = 0;
+	}
+	return collision;
+}
+
+void print_the_end(WINDOW *win, Snake* snake) {
+	// move the cursor to the center of the screen
+	move(getmaxy(win) / 2, getmaxx(win) / 2 - 10);
+
+	// Display the end banner
+	printw("Game Over! Your Score: %d", snake->length);
+
+	// Refresh the screen to update the changes
+	wrefresh(win);
+
 }
 
 void game_loop(WINDOW *win, Snake* mysnake) {
 	unsigned char food_exists = 0;
 	int* food_coordinates;
+	char collision = 0;
 
 	while (1) {
 		int ch = getch();
@@ -133,7 +158,25 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 		if (food_eaten(mysnake, food_coordinates) == 1) {
 			food_exists = 0;
 		}
+
+		// in case of a collision print the end banner and exit the loop
+		collision = check_collision(win, mysnake);
+		if (collision == 1) {
+			print_the_end(win, mysnake);
+			// Wait for a key press before exiting
+			nodelay(stdscr, FALSE);
+			getch();
+			break;
+		}
+
 		wrefresh(win);
+		// Move the cursor to the bottom of the window and print debugging information
+        move(getmaxy(win) - 1, 0);
+        clrtoeol();  // Clear the current line
+        printw("Snake's head is at: %d, %d: Collision: %d", mysnake->body[0].x, mysnake->body[0].y, collision);
+
+        // Refresh the screen to update the changes
+        wrefresh(win);
 		sleep(1);
 	}
 
