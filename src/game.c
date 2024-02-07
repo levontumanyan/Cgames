@@ -56,7 +56,28 @@ Snake* initialize_head(WINDOW *win) {
 	return mysnake;
 }
 
-void game_loop(WINDOW *win, Snake* mysnake) {	
+int* generate_food(WINDOW *win) {
+	int* food_coordinates = get_random_coordinates();
+
+	// Erase the previous position of the tail
+	mvwaddch(win, food_coordinates[0], food_coordinates[1], '$');
+
+	return food_coordinates;
+}
+
+char food_eaten(Snake* snake, int* food_coordinates) {
+	char is_food_eaten = 0;
+
+	if (food_coordinates[0] == snake->body[0].x && food_coordinates[1] == snake->body[0].y) {
+		is_food_eaten = 1;
+	}
+	return is_food_eaten;
+}
+
+void game_loop(WINDOW *win, Snake* mysnake) {
+	unsigned char food_exists = 0;
+	int* food_coordinates;
+
 	while (1) {
 		int ch = getch();
 		// If there's no input, ch will be ERR
@@ -105,6 +126,13 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 				break;
 		}
 		mvwaddch(win, mysnake->body[0].x, mysnake->body[0].y, ACS_CKBOARD);
+		if (food_exists == 0) {
+			food_coordinates = generate_food(win);
+			food_exists = 1;
+		}
+		if (food_eaten(mysnake, food_coordinates) == 1) {
+			food_exists = 0;
+		}
 		wrefresh(win);
 		sleep(1);
 	}
