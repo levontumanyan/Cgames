@@ -224,18 +224,21 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 			break;
 		}
 
-		wrefresh(win);
-		// Move the cursor to the bottom of the window and print debugging information
-        move(getmaxy(win) - 1, 0);
-        clrtoeol();  // Clear the current line
-        printw("Snake's head is at: %d, %d: Collision: %d\n", mysnake->body[0].x, mysnake->body[0].y, collision);
-        printw("Maxx: %d Maxy: %d", getmaxx(win), getmaxy(win));
-
         // Refresh the screen to update the changes
         wrefresh(win);
 		usleep(500000 / mysnake->speed);
-	}
+		// debug(win, mysnake, collision);
 
+	}
 	// Clean up and close
 	endwin();
+}
+
+void debug(WINDOW* win, Snake* snake, char collision) {
+	// Move the cursor to the bottom of the window and print debugging information
+	move(getmaxy(win) - 1, 0);
+	clrtoeol();  // Clear the current line
+	printw("Snake's head is at: %d, %d: Collision: %d\n", snake->body[0].x, snake->body[0].y, collision);
+	printw("Maxx: %d Maxy: %d", getmaxx(win), getmaxy(win));
+	wrefresh(win);
 }

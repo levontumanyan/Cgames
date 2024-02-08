@@ -28,5 +28,6 @@ char check_collision(WINDOW *win, Snake* snake);
 char check_body_collision(Snake* snake);
 void print_the_end(WINDOW *win, Snake* snake);
 void game_loop(WINDOW *win, Snake *mysnake);
+void debug(WINDOW* win, Snake* snake, char collision);
 
 #endif
