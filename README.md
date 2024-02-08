@@ -6,8 +6,10 @@
 - Input handling to change the snake's direction - done
 - need to properly remove the tail from the screen as the snake moves
 - add to the collision the case where the snake collides with its own body
+- when the snake collides and the game over banner is printed. if the player quickly presses buttons it exits too quickly without the player having time to see the score - just add a one second delay then wait for a user input to exit 
+- add a feature where if u press the space bar it moves faster - done
+- when the snake is going in a certain direction dont allow key press of 180 degrees direction - example: if up no down
 
 # February 8
 ## Bugs at the moment
 - The game only finishes when the snake collides with the top and left corners not left and bottom. - done
-
