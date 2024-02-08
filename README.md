@@ -1,3 +1,12 @@
+# How to run the game
+Clone the repository. Change directory into the repo then run make to build the executable. Finally run it and enjoy!
+```
+git clone https://github.com/itfibonacci/snake
+cd snake
+make
+./bin/snake
+```
+
 # Things to consider
 - We need a game loop - done
 - Need a function that is responsible for outputting random food on the screen - done
@@ -10,6 +19,5 @@
 - add a feature where if u press the space bar it moves faster - done
 - when the snake is going in a certain direction dont allow key press of 180 degrees direction - example: if up no down
 
-# February 8
 ## Bugs at the moment
 - The game only finishes when the snake collides with the top and left corners not left and bottom. - done
