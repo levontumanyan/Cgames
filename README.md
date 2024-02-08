@@ -7,10 +7,15 @@ make
 ./bin/snake
 ```
 
-# Todos
+# How to play the game
+Arrow keys for moving around\
+Space - for boosting the snake's speed
+Arrow key opposite to your current direction will reduce the speed
+
+## Todos
 - add emoji support ( utf-8 ) - lncursesw looks like is a bit more complicated in terms of dependencies. Users will have to install it separately and I am not happy with that approach.
 
-# Done
+## Done
 - We need a game loop
 - Need a function that is responsible for outputting random food on the screen
 - Need to keep track of the snake's body, direction, (speed)
