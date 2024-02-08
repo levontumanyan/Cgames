@@ -111,40 +111,60 @@ void print_the_end(WINDOW *win, Snake* snake) {
 
 }
 
+void handle_user_input(Snake* snake) {
+	int ch = getch();
+	// If there's no input, ch will be ERR
+	if (ch != ERR) {
+		// Handle user input
+		switch (ch) {
+			case KEY_UP:
+				if (snake->direction == 2) {
+					if (snake->speed != 1) snake->speed--; 
+					break;
+				}
+				snake->direction = 0;
+				snake->speed = 1;
+				break;
+			case KEY_RIGHT:
+				if (snake->direction == 3) {
+					if (snake->speed != 1) snake->speed--;
+					break;
+				}
+				snake->direction = 1;
+				snake->speed = 1;
+				break;
+			case KEY_DOWN:
+				if (snake->direction == 0) {
+					if (snake->speed != 1) snake->speed--;
+					break;
+				}
+				snake->direction = 2;
+				snake->speed = 1;
+				break;
+			case KEY_LEFT:
+				if (snake->direction == 1) {
+					if (snake->speed != 1) snake->speed--;
+					break;
+				}
+				snake->direction = 3;
+				snake->speed = 1;
+				break;
+			case ' ':
+				snake->speed++;
+			default:
+				break;
+		}
+	}
+}
+
 void game_loop(WINDOW *win, Snake* mysnake) {
 	unsigned char food_exists = 0;
 	int* food_coordinates;
 	char collision = 0;
 
 	while (1) {
-		int ch = getch();
-		// If there's no input, ch will be ERR
-		if (ch != ERR) {
-			// Handle user input
-			switch (ch) {
-				case KEY_UP:
-					mysnake->direction = 0;
-					mysnake->speed = 1;
-					break;
-				case KEY_RIGHT:
-					mysnake->direction = 1;
-					mysnake->speed = 1;
-					break;
-				case KEY_DOWN:
-					mysnake->direction = 2;
-					mysnake->speed = 1;
-					break;
-				case KEY_LEFT:
-					mysnake->direction = 3;
-					mysnake->speed = 1;
-					break;
-				case ' ':
-					mysnake->speed++;
-				default:
-					break;
-			}
-		}
-
+		handle_user_input(mysnake);
+		
 		// Erase the previous position of the tail
 		mvwaddch(win, mysnake->body[mysnake->length - 1].y, mysnake->body[mysnake->length - 1].x, ' ');
 		wrefresh(win);
