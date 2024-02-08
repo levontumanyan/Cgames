@@ -74,12 +74,9 @@ char food_eaten(Snake* snake, int* food_coordinates) {
 }
 
 char check_collision(WINDOW *win, Snake* snake) {
-	char collision;
+	char collision = 0;
 	if (snake->body[0].x > getmaxx(win) - 2 || snake->body[0].x < 1 || snake->body[0].y > getmaxy(win) - 2 || snake->body[0].y < 1) {
 		collision = 1;
-	}
-	else {
-		collision = 0;
 	}
 	return collision;
 }
@@ -105,10 +102,15 @@ void print_the_end(WINDOW *win, Snake* snake) {
 
 	// Display the end banner
 	printw("Game Over! Your Score: %d", snake->length);
+	// Below line is used for the message to be printed to stdout otherwise sleep comes first
+	refresh();
 
 	// Refresh the screen to update the changes
 	wrefresh(win);
-
+	// Wait for a key press before exiting
+	sleep(1);
+	nodelay(stdscr, FALSE);
+	getch();
 }
 
 void handle_user_input(Snake* snake) {
@@ -160,7 +162,6 @@ void handle_user_input(Snake* snake) {
 void game_loop(WINDOW *win, Snake* mysnake) {
 	unsigned char food_exists = 0;
 	int* food_coordinates;
-	char collision = 0;
 
 	while (1) {
 		handle_user_input(mysnake);
@@ -207,38 +208,31 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 		}
 
 		// in case of a collision print the end banner and exit the loop
-		collision = check_collision(win, mysnake);
-		if (collision == 1) {
+		if (check_collision(win, mysnake) == 1) {
 			print_the_end(win, mysnake);
-			// Wait for a key press before exiting
-			nodelay(stdscr, FALSE);
-			getch();
 			break;
 		}
-		collision = check_body_collision(mysnake);
-		if (collision == 1) {
+		if (check_body_collision(mysnake) == 1) {
 			print_the_end(win, mysnake);
-			// Wait for a key press before exiting
-			nodelay(stdscr, FALSE);
-			getch();
 			break;
 		}
 
         // Refresh the screen to update the changes
         wrefresh(win);
 		usleep(500000 / mysnake->speed);
-		// debug(win, mysnake, collision);
+		// uncomment the below to enable some debugging
+		// debug(win, mysnake);
 
 	}
 	// Clean up and close
 	endwin();
 }
 
-void debug(WINDOW* win, Snake* snake, char collision) {
+void debug(WINDOW* win, Snake* snake) {
 	// Move the cursor to the bottom of the window and print debugging information
 	move(getmaxy(win) - 1, 0);
 	clrtoeol();  // Clear the current line
-	printw("Snake's head is at: %d, %d: Collision: %d\n", snake->body[0].x, snake->body[0].y, collision);
+	printw("Snake's head is at: %d, %d\n", snake->body[0].x, snake->body[0].y);
 	printw("Maxx: %d Maxy: %d", getmaxx(win), getmaxy(win));
 	wrefresh(win);
 }
