@@ -15,7 +15,6 @@ Arrow key opposite to your current direction will reduce the speed
 ## Todos
 - add a highest score capability for the game to track across sessions
 - add emoji support ( utf-8 ) - lncursesw looks like is a bit more complicated in terms of dependencies. Users will have to install it separately and I am not happy with that approach.
-- when the snake collides and the game over banner is printed. if the player quickly presses buttons it exits too quickly without the player having time to see the score - just add a one second delay then wait for a user input to exit
 
 ## Done
 - We need a game loop
@@ -28,6 +27,7 @@ Arrow key opposite to your current direction will reduce the speed
 - add a feature where if u press the space bar it moves faster
 - when the snake is going in a certain direction dont allow key press of 180 degrees direction - example: if up no down
 - add debugging as a function so that if needed we can display it at the bottom
+- when the snake collides and the game over banner is printed. if the player quickly presses buttons it exits too quickly without the player having time to see the score - just add a one second delay then wait for a user input to exit
 
 ## Bugs at the moment
 - The game only finishes when the snake collides with the top and left corners not left and bottom. - done
