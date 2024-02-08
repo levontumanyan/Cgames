@@ -30,4 +30,7 @@ Arrow key opposite to your current direction will reduce the speed
 - when the snake collides and the game over banner is printed. if the player quickly presses buttons it exits too quickly without the player having time to see the score - just add a one second delay then wait for a user input to exit
 
 ## Bugs at the moment
-- The game only finishes when the snake collides with the top and left corners not left and bottom. - done
+- None as far as i know
+
+## Bugs resolved
+- The game only finishes when the snake collides with the top and left corners not left and bottom. Issue was my assumption that in ncurses window writing function x is first then y, but it was the other way.
