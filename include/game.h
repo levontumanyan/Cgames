@@ -16,9 +16,9 @@ typedef struct {
 
 WINDOW* initialize_screen();
 Snake* initialize_head(WINDOW *win);
-void game_loop(WINDOW *win, Snake* mysnake);
+void game_loop(WINDOW *win, Snake *mysnake);
 void initialize_game();
-char food_eaten(Snake* snake, int* food_coordinates);
-int* generate_food(WINDOW *win);
+char food_eaten(Snake *snake, int *food_coordinates);
+int* generate_food(WINDOW* win);
 
 #endif

@@ -38,12 +38,12 @@ Snake* initialize_head(WINDOW *win) {
 	Snake* mysnake = malloc(sizeof(Snake));
 
 	// The head will be placed randomly on the board when the game starts
-	int* head_coordinates = get_random_coordinates();
+	int* head_coordinates = get_random_coordinates(win);
 	mysnake->body[0].x = head_coordinates[0];
 	mysnake->body[0].y = head_coordinates[1];
 
 	// Display the snake's head
-	mvwaddch(win, mysnake->body[0].x, mysnake->body[0].y, ACS_CKBOARD);
+	mvwaddch(win, mysnake->body[0].y, mysnake->body[0].x, ACS_CKBOARD);
     wrefresh(win);
 
 	// length is initialized to 1
@@ -57,10 +57,10 @@ Snake* initialize_head(WINDOW *win) {
 }
 
 int* generate_food(WINDOW *win) {
-	int* food_coordinates = get_random_coordinates();
+	int* food_coordinates = get_random_coordinates(win);
 
 	// Erase the previous position of the tail
-	mvwaddch(win, food_coordinates[0], food_coordinates[1], '$');
+	mvwaddch(win, food_coordinates[1], food_coordinates[0], '$');
 
 	return food_coordinates;
 }
@@ -77,7 +77,7 @@ char food_eaten(Snake* snake, int* food_coordinates) {
 
 char check_collision(WINDOW *win, Snake* snake) {
 	char collision;
-	if (snake->body[0].x == getmaxx(win) - 2 || snake->body[0].x < 1 || snake->body[0].y == getmaxy(win) - 2 || snake->body[0].y < 1) {
+	if (snake->body[0].x > getmaxx(win) - 2 || snake->body[0].x < 1 || snake->body[0].y > getmaxy(win) - 2 || snake->body[0].y < 1) {
 		collision = 1;
 	}
 	else {
@@ -127,30 +127,31 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 		}
 
 		// Erase the previous position of the tail
-		mvwaddch(win, mysnake->body[mysnake->length - 1].x, mysnake->body[mysnake->length - 1].y, ' ');
+		mvwaddch(win, mysnake->body[mysnake->length - 1].y, mysnake->body[mysnake->length - 1].x, ' ');
 
 		switch (mysnake->direction) {
 			case 0:
 				// Move the snake up
-				mysnake->body[0].x--;
+				mysnake->body[0].y--;
 				break;
 			case 1:
 				// Move the snake right
-				mysnake->body[0].y++;
+				mysnake->body[0].x++;
 				break;
 			case 2:
 				// Move the snake down
-				mysnake->body[0].x++;
+				mysnake->body[0].y++;
 				break;
 			case 3:
 				// Move the snake left
-				mysnake->body[0].y--;
+				mysnake->body[0].x--;
 				break;
 			
 			default:
 				break;
 		}
-		mvwaddch(win, mysnake->body[0].x, mysnake->body[0].y, ACS_CKBOARD);
+		mvwaddch(win, mysnake->body[0].y, mysnake->body[0].x, ACS_CKBOARD);
+		wrefresh(win);
 		if (food_exists == 0) {
 			food_coordinates = generate_food(win);
 			food_exists = 1;
@@ -173,7 +174,8 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 		// Move the cursor to the bottom of the window and print debugging information
         move(getmaxy(win) - 1, 0);
         clrtoeol();  // Clear the current line
-        printw("Snake's head is at: %d, %d: Collision: %d", mysnake->body[0].x, mysnake->body[0].y, collision);
+        printw("Snake's head is at: %d, %d: Collision: %d\n", mysnake->body[0].x, mysnake->body[0].y, collision);
+        printw("Maxx: %d Maxy: %d", getmaxx(win), getmaxy(win));
 
         // Refresh the screen to update the changes
         wrefresh(win);
