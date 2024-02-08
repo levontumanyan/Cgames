@@ -7,16 +7,19 @@ make
 ./bin/snake
 ```
 
-# Things to consider
-- We need a game loop - done
-- Need a function that is responsible for outputting random food on the screen - done
-- Need to keep track of the snake's body, direction, (speed) - speed is left only
-- Collision detection - done
-- Input handling to change the snake's direction - done
+# Todos
+- add emoji support ( utf-8 ) - lncursesw looks like is a bit more complicated in terms of dependencies. Users will have to install it separately and I am not happy with that approach.
+
+# Done
+- We need a game loop
+- Need a function that is responsible for outputting random food on the screen
+- Need to keep track of the snake's body, direction, (speed)
+- Collision detection
+- Input handling to change the snake's direction
 - need to properly remove the tail from the screen as the snake moves
 - add to the collision the case where the snake collides with its own body
 - when the snake collides and the game over banner is printed. if the player quickly presses buttons it exits too quickly without the player having time to see the score - just add a one second delay then wait for a user input to exit 
-- add a feature where if u press the space bar it moves faster - done
+- add a feature where if u press the space bar it moves faster
 - when the snake is going in a certain direction dont allow key press of 180 degrees direction - example: if up no down
 
 ## Bugs at the moment
