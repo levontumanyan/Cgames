@@ -1,8 +1,4 @@
-#include <stdlib.h>
-#include <unistd.h> // sleep function
-
 #include "game.h"
-#include "utils.h"
 
 void initialize_game() {
 	WINDOW *win = initialize_screen();
@@ -15,6 +11,7 @@ WINDOW* initialize_screen() {
 	initscr();
 	noecho();
 	cbreak();
+	curs_set(0); // Make the cursor invisible
 
 	// Create a window for the snake to move in
 	int height = 20, width = 40;
@@ -52,6 +49,7 @@ Snake* initialize_head(WINDOW *win) {
 	// direction is initialized to up, later this can be randomized too
 	// assume 0, 1, 2, 3 to be directions - up, right, down, left
 	mysnake->direction = 0;
+	mysnake->speed = 1;
 
 	return mysnake;
 }
@@ -86,6 +84,21 @@ char check_collision(WINDOW *win, Snake* snake) {
 	return collision;
 }
 
+char check_body_collision(Snake* snake) {
+	char collision = 0;
+	for (int i = 0; i < snake->length - 1; i++) {
+		for (int j = 0; i < snake->length - 1; i++) {
+			if (i == j) {
+				continue;
+			}
+			if (snake->body[i].x == snake->body[j].x && snake->body[i].y == snake->body[j].y) {
+				collision = 1;
+			}
+		}	
+	}
+	return collision;
+}
+
 void print_the_end(WINDOW *win, Snake* snake) {
 	// move the cursor to the center of the screen
 	move(getmaxy(win) / 2, getmaxx(win) / 2 - 10);
@@ -111,16 +124,22 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 			switch (ch) {
 				case KEY_UP:
 					mysnake->direction = 0;
+					mysnake->speed = 1;
 					break;
 				case KEY_RIGHT:
 					mysnake->direction = 1;
+					mysnake->speed = 1;
 					break;
 				case KEY_DOWN:
 					mysnake->direction = 2;
+					mysnake->speed = 1;
 					break;
 				case KEY_LEFT:
 					mysnake->direction = 3;
+					mysnake->speed = 1;
 					break;
+				case ' ':
+					mysnake->speed++;
 				default:
 					break;
 			}
@@ -128,7 +147,14 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 
 		// Erase the previous position of the tail
 		mvwaddch(win, mysnake->body[mysnake->length - 1].y, mysnake->body[mysnake->length - 1].x, ' ');
+		wrefresh(win);
 
+		// Move the body of the snake
+		for (int i = mysnake->length - 1; i > 0; i--) {
+			mysnake->body[i] = mysnake->body[i - 1];
+		}
+
+		// Move the head of the snake
 		switch (mysnake->direction) {
 			case 0:
 				// Move the snake up
@@ -169,6 +195,14 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 			getch();
 			break;
 		}
+		collision = check_body_collision(mysnake);
+		if (collision == 1) {
+			print_the_end(win, mysnake);
+			// Wait for a key press before exiting
+			nodelay(stdscr, FALSE);
+			getch();
+			break;
+		}
 
 		wrefresh(win);
 		// Move the cursor to the bottom of the window and print debugging information
@@ -179,7 +213,7 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 
         // Refresh the screen to update the changes
         wrefresh(win);
-		sleep(1);
+		usleep(500000 / mysnake->speed);
 	}
 
 	// Clean up and close

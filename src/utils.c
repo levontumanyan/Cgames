@@ -7,8 +7,8 @@ int* get_random_coordinates(WINDOW* win) {
 	srand(time(NULL));
 
 	// Generate random x and y coordinates
-	coordinates[0] = rand() % getmaxx(win) + 1;
-	coordinates[1] = rand() % getmaxy(win) + 1;
+	coordinates[0] = rand() % (getmaxx(win) - 2) + 1;
+	coordinates[1] = rand() % (getmaxy(win) - 2) + 1;
 
 	return coordinates;
 }
