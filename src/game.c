@@ -14,8 +14,7 @@ WINDOW* initialize_screen() {
 	curs_set(0); // Make the cursor invisible
 
 	// Create a window for the snake to move in
-	int height = 20, width = 40;
-	WINDOW *win = newwin(height, width, 0, 0);
+	WINDOW *win = newwin(WINDOW_HEIGHT, WINDOW_WIDTH, 0, 0);
 
 	// Enable non-blocking input
 	nodelay(stdscr, TRUE);
@@ -40,8 +39,21 @@ Snake* initialize_head(WINDOW *win) {
 	mysnake->body[0].y = head_coordinates[1];
 
 	// Display the snake's head
-	mvwaddch(win, mysnake->body[0].y, mysnake->body[0].x, ACS_CKBOARD);
-    wrefresh(win);
+	if (has_colors() == TRUE) {
+		// Initialize color pair for the head
+		start_color();
+		init_pair(1, COLOR_BLUE, COLOR_BLACK); // Change the colors as per your preference
+
+		// Display the snake's head with color
+		attron(COLOR_PAIR(1));
+		mvwaddch(win, mysnake->body[0].y, mysnake->body[0].x, ACS_CKBOARD);
+		attroff(COLOR_PAIR(1));
+		wrefresh(win);
+	}
+	else {
+		mvwaddch(win, mysnake->body[0].y, mysnake->body[0].x, ACS_CKBOARD);
+		wrefresh(win);
+	}
 
 	// length is initialized to 1
 	mysnake->length = 1;
@@ -200,6 +212,22 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 		}
 		mvwaddch(win, mysnake->body[0].y, mysnake->body[0].x, ACS_CKBOARD);
 		wrefresh(win);
+		// Display the snake's head
+		if (has_colors() == TRUE) {
+			// Initialize color pair for the head
+			// start_color();
+			init_pair(1, COLOR_BLUE, COLOR_BLACK); // Change the colors as per your preference
+
+			// Display the snake's head with color
+			attron(COLOR_PAIR(1));
+			mvwaddch(win, mysnake->body[0].y, mysnake->body[0].x, ACS_CKBOARD);
+			attroff(COLOR_PAIR(1));
+			wrefresh(win);
+		}
+		else {
+			mvwaddch(win, mysnake->body[0].y, mysnake->body[0].x, ACS_CKBOARD);
+			wrefresh(win);
+		}
 		if (food_exists == 0) {
 			food_coordinates = generate_food(win);
 			food_exists = 1;
@@ -217,7 +245,6 @@ void game_loop(WINDOW *win, Snake* mysnake) {
 			print_the_end(win, mysnake);
 			break;
 		}
-
         // Refresh the screen to update the changes
         wrefresh(win);
 		usleep(500000 / mysnake->speed);

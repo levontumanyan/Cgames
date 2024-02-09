@@ -7,6 +7,9 @@
 
 #include "utils.h"
 
+#define WINDOW_HEIGHT 20
+#define WINDOW_WIDTH 40
+
 typedef struct {
 	int x;
 	int y;
@@ -20,6 +23,7 @@ typedef struct {
 } Snake;
 
 WINDOW* initialize_screen();
+void add_colors(WINDOW *win);
 Snake* initialize_head(WINDOW *win);
 void initialize_game();
 char food_eaten(Snake *snake, int *food_coordinates);
