@@ -108,7 +108,7 @@ void print_the_end(WINDOW *win, Snake* snake) {
 	// Refresh the screen to update the changes
 	wrefresh(win);
 	// Wait for a key press before exiting
-	sleep(1);
+	usleep(1500000);
 	nodelay(stdscr, FALSE);
 	getch();
 }
@@ -153,6 +153,7 @@ void handle_user_input(Snake* snake) {
 				break;
 			case ' ':
 				snake->speed++;
+				break;
 			default:
 				break;
 		}
