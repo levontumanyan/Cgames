@@ -13,6 +13,8 @@ Space - for boosting the snake's speed
 Arrow key opposite to your current direction will reduce the speed
 
 ## Todos
+- when the snake's head at first gets generated near the border, make sure the direction does not point towards that border
+- make the initial direction random
 - add a highest score capability for the game to track across sessions
 - add emoji support ( utf-8 ) - lncursesw looks like is a bit more complicated in terms of dependencies. Users will have to install it separately and I am not happy with that approach.
 
