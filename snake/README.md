@@ -1,11 +1,10 @@
 # How to run the game
 Clone the repository. Change directory into the repo then run make to build the executable. Finally run it and enjoy!
 ```
-git clone https://github.com/itfibonacci/snake
-cd snake
+git clone itfibonacci/Cgames
+cd Cgames/snake
 make
 ./bin/snake
-```
 
 # How to play the game
 Arrow keys for moving around\
