@@ -20,6 +20,7 @@ make
 	- displays the blocks on the screen
 - Have a ball that moves to crush the blocks
 - make sure blocks are not generated on top of each other
+- add diagonal directions for the ball to move as well
 
 ## Done
 - create a coordinate struct

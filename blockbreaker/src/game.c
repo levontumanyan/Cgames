@@ -29,23 +29,19 @@ void move_ball(WINDOW *window, Ball *ball) {
 	switch (ball->direction) {
 		// up direction
 		case 0:
+			if (ball->body.y <= 1) {
+				ball->direction = 1;
+				break;
+			}
 			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
 			ball->body.y--;
 			display_ball(window, ball);
 			break;
+		// down direction
 		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
-		case 5:
-			break;
-		case 6:
-			break;
-		case 7:
+			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
+			ball->body.y++;
+			display_ball(window, ball);
 			break;
 		default:
 			break;
@@ -77,6 +73,11 @@ Block* generate_block(WINDOW *window) {
 	return block;
 }
 
+void check_for_collision(Ball *ball) {
+
+
+}
+
 unsigned char is_overlap(unsigned char* coordinates, unsigned char length) {
 	for (unsigned char i = 0; i < length; i++) {
 		if (game_area[coordinates[0] + i][coordinates[1]] == 1) {
@@ -92,16 +93,6 @@ void display_block(WINDOW *window, Block *block) {
 		mvwaddch(window, block->body[i].y, block->body[i].x, ACS_CKBOARD);
 	}
 	wrefresh(window);
-}
-
-void monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball) {
-	unsigned char blocks_left = NUM_OF_BLOCKS(level);
-
-	while (blocks_left > 0) {
-		handle_user_input(window, bottom_bar);
-		move_ball(window, ball);
-		usleep(500000);
-	}
 }
 
 Bar *generate_bottom_bar(WINDOW *window) {
@@ -123,6 +114,8 @@ void display_bottom_bar(WINDOW *window, Bar* bottom_bar) {
 	}
 	wrefresh(window);
 }
+
+pthread_mutex_t ncurses_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void handle_user_input(WINDOW *window, Bar *bottom_bar) {
 	int ch = getch();
@@ -158,7 +151,41 @@ void handle_user_input(WINDOW *window, Bar *bottom_bar) {
 				break;
 		}
 	}
+	pthread_mutex_lock(&ncurses_mutex);
 	display_bottom_bar(window, bottom_bar);
+	pthread_mutex_unlock(&ncurses_mutex);
+}
+
+void *handle_user_input_thread(void *args) {
+	// Unpack the arguments
+	struct handle_user_input_thread_args *targs = (struct handle_user_input_thread_args *)args;
+	WINDOW *window = targs->window;
+	Bar *bottom_bar = targs->bottom_bar;
+
+	while (1) {
+		handle_user_input(window, bottom_bar);
+	}
+	return NULL;
+}
+
+void monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball) {
+	unsigned char blocks_left = NUM_OF_BLOCKS(level);
+
+	// Create a struct to hold the arguments for the new thread
+	struct handle_user_input_thread_args targs;
+	targs.window = window;
+	targs.bottom_bar = bottom_bar;
+
+	// Create the new thread
+	pthread_t input_thread;
+	pthread_create(&input_thread, NULL, handle_user_input_thread, &targs);
+
+	while (blocks_left > 0) {
+		pthread_mutex_lock(&ncurses_mutex);
+		move_ball(window, ball);
+		pthread_mutex_unlock(&ncurses_mutex);
+		usleep(300000);
+	}
 }
 
 void game_loop(WINDOW* window) {
