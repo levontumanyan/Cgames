@@ -5,6 +5,7 @@ git clone itfibonacci/Cgames
 cd Cgames/snake
 make
 ./bin/snake
+```
 
 # How to play the game
 Arrow keys for moving around\
