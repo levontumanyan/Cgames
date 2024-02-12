@@ -1,14 +1,55 @@
-#include <stdlib.h>
-
 #include "game.h"
 #include "utils.h"
 
 #define NUM_OF_BLOCKS(x) ((x) + 3)
 
+unsigned char game_area[WINDOW_LENGTH][WINDOW_HEIGHT];
 
 void initialize_game() {
+	// Seed the random number generator
+	srand(time(NULL));
 	WINDOW *win = initialize_screen();
 	game_loop(win);
+}
+
+Ball *generate_ball(WINDOW *window) {
+	Ball *ball = malloc(sizeof(Ball));
+	ball->body.x = getmaxx(window)/2 - 2;
+	ball->body.y = getmaxy(window) - 5;
+	ball->direction = 0;
+	return ball;
+}
+
+void display_ball(WINDOW *window, Ball *ball) {
+	mvwaddch(window, ball->body.y, ball->body.x, 'O');
+	wrefresh(window);
+}
+
+void move_ball(WINDOW *window, Ball *ball) {
+	switch (ball->direction) {
+		// up direction
+		case 0:
+			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
+			ball->body.y--;
+			display_ball(window, ball);
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		default:
+			break;
+	}
 }
 
 void construct_level(WINDOW *window, unsigned char level) {
@@ -24,12 +65,25 @@ Block* generate_block(WINDOW *window) {
 	block->length = 3;
 	block->body = malloc(block->length * sizeof(Coordinate));
 	block->health = 1;
-	unsigned char* coordinates = get_random_coordinates(window);
+	unsigned char* coordinates;
+	do {
+		coordinates = get_random_coordinates(window);
+	} while (is_overlap(coordinates, block->length));
 	for (unsigned char i = 0; i < block->length; i++) {
 		block->body[i].x = coordinates[0] + i;
 		block->body[i].y = coordinates[1];
+		game_area[block->body[i].x][block->body[i].y] = 1;  // Mark this coordinate as occupied
 	}
 	return block;
+}
+
+unsigned char is_overlap(unsigned char* coordinates, unsigned char length) {
+	for (unsigned char i = 0; i < length; i++) {
+		if (game_area[coordinates[0] + i][coordinates[1]] == 1) {
+			return 1;  // There is an overlap
+		}
+	}
+	return 0;  // No overlap
 }
 
 void display_block(WINDOW *window, Block *block) {
@@ -40,11 +94,13 @@ void display_block(WINDOW *window, Block *block) {
 	wrefresh(window);
 }
 
-void monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level) {
+void monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball) {
 	unsigned char blocks_left = NUM_OF_BLOCKS(level);
 
 	while (blocks_left > 0) {
 		handle_user_input(window, bottom_bar);
+		move_ball(window, ball);
+		usleep(500000);
 	}
 }
 
@@ -110,11 +166,13 @@ void game_loop(WINDOW* window) {
 	unsigned char level_over = 0;
 	Bar *bottom_bar = generate_bottom_bar(window);
 	display_bottom_bar(window, bottom_bar);
+	Ball *ball = generate_ball(window);
+	display_ball(window, ball);
 
 	while (1) {
-		current_level++;
 		construct_level(window, current_level);
-		monitor_level(window, bottom_bar, current_level);
+		monitor_level(window, bottom_bar, current_level, ball);
+		current_level++;
 	}
 	// Clean up and close
 	endwin();

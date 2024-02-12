@@ -13,10 +13,7 @@ make
 
 ## Todos
 - create a game loop
-- create a coordinate struct
 - create a block struct - coordinate member, unsigned char length, unsigned char health (0..3)
-- create a ncurses screen - 
-- create the bottom bar - have it be moved with keyboard arrows first then later maybe with mouse
 - create levels when all the blocks are broken proceed to next level - function name constructlevel
 	- accepts the level number
 	- creates the appropriate number of blocks
@@ -25,6 +22,11 @@ make
 - make sure blocks are not generated on top of each other
 
 ## Done
+- create a coordinate struct
+- create a ncurses screen
+- create the bottom bar - have it be moved with keyboard arrows first then later maybe with mouse
+- add user input handling for the bottom bar to move
+- check that the bottom bar doesn't run over the boundaries
 
 ## Current Bugs
 
