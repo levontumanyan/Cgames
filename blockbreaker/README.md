@@ -17,8 +17,12 @@ make
 - create a block struct - coordinate member, unsigned char length, unsigned char health (0..3)
 - create a ncurses screen - 
 - create the bottom bar - have it be moved with keyboard arrows first then later maybe with mouse
-- create levels when all the blocks are broken proceed to next level
-- 
+- create levels when all the blocks are broken proceed to next level - function name constructlevel
+	- accepts the level number
+	- creates the appropriate number of blocks
+	- displays the blocks on the screen
+- Have a ball that moves to crush the blocks
+- make sure blocks are not generated on top of each other
 
 ## Done
 
