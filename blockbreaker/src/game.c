@@ -1,7 +1,7 @@
 #include "game.h"
 #include "utils.h"
 
-#define NUM_OF_BLOCKS(x) ((x) + 3)
+#define NUM_OF_BLOCKS(x) (10 - (x))
 
 pthread_mutex_t ncurses_mutex = PTHREAD_MUTEX_INITIALIZER;
 unsigned char game_area[WINDOW_LENGTH][WINDOW_HEIGHT];
