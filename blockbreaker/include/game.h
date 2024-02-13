@@ -36,7 +36,7 @@ struct handle_user_input_thread_args {
 WINDOW* initialize_screen();
 void initialize_game();
 void construct_level(WINDOW *window, unsigned char level);
-void monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball);
+unsigned char monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball);
 void game_loop(WINDOW* window);
 
 void handle_user_input(WINDOW *window, Bar *bottom_bar);
@@ -49,6 +49,12 @@ void display_block(WINDOW *window, Block *block);
 
 unsigned char is_overlap(unsigned char* coordinates, unsigned char length);
 
+void check_for_collision_with_block(Ball *ball);
+void check_for_collision_with_bar(Ball *ball, Bar *bottom_bar);
+unsigned char check_for_collision_boundaries(WINDOW *window,Ball *ball);
 
+void print_the_end(WINDOW *window, unsigned char current_level);
+
+void debug(WINDOW* window, Ball *ball);
 
 #endif

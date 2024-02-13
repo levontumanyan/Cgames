@@ -3,6 +3,7 @@
 
 #define NUM_OF_BLOCKS(x) ((x) + 3)
 
+pthread_mutex_t ncurses_mutex = PTHREAD_MUTEX_INITIALIZER;
 unsigned char game_area[WINDOW_LENGTH][WINDOW_HEIGHT];
 
 void initialize_game() {
@@ -16,7 +17,7 @@ Ball *generate_ball(WINDOW *window) {
 	Ball *ball = malloc(sizeof(Ball));
 	ball->body.x = getmaxx(window)/2 - 2;
 	ball->body.y = getmaxy(window) - 5;
-	ball->direction = 0;
+	ball->direction = 3;
 	return ball;
 }
 
@@ -29,10 +30,6 @@ void move_ball(WINDOW *window, Ball *ball) {
 	switch (ball->direction) {
 		// up direction
 		case 0:
-			if (ball->body.y <= 1) {
-				ball->direction = 1;
-				break;
-			}
 			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
 			ball->body.y--;
 			display_ball(window, ball);
@@ -41,6 +38,34 @@ void move_ball(WINDOW *window, Ball *ball) {
 		case 1:
 			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
 			ball->body.y++;
+			display_ball(window, ball);
+			break;
+		// left diagonal up
+		case 2:
+			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
+			ball->body.y--;
+			ball->body.x--;
+			display_ball(window, ball);
+			break;
+		// right diagonal up
+		case 3:
+			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
+			ball->body.y--;
+			ball->body.x++;
+			display_ball(window, ball);
+			break;
+		// left diagonal down
+		case 4:
+			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
+			ball->body.y++;
+			ball->body.x--;
+			display_ball(window, ball);
+			break;
+		// right diagonal down
+		case 5:
+			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
+			ball->body.y++;
+			ball->body.x++;
 			display_ball(window, ball);
 			break;
 		default:
@@ -61,7 +86,7 @@ Block* generate_block(WINDOW *window) {
 	block->length = 3;
 	block->body = malloc(block->length * sizeof(Coordinate));
 	block->health = 1;
-	unsigned char* coordinates;
+	unsigned char *coordinates;
 	do {
 		coordinates = get_random_coordinates(window);
 	} while (is_overlap(coordinates, block->length));
@@ -73,9 +98,15 @@ Block* generate_block(WINDOW *window) {
 	return block;
 }
 
-void check_for_collision(Ball *ball) {
+void check_for_collision_with_block(Ball *ball) {
+	unsigned char balls_coordinates[2];
+	balls_coordinates[0] = ball->body.x;
+	balls_coordinates[1] = ball->body.y;
 
-
+	if (is_overlap(balls_coordinates, 1) == 1) {
+		ball->direction = 1;
+		game_area[balls_coordinates[0]][balls_coordinates[1]] = 0;
+	}
 }
 
 unsigned char is_overlap(unsigned char* coordinates, unsigned char length) {
@@ -85,6 +116,53 @@ unsigned char is_overlap(unsigned char* coordinates, unsigned char length) {
 		}
 	}
 	return 0;  // No overlap
+}
+
+void check_for_collision_with_bar(Ball *ball, Bar *bottom_bar) {
+	if ((ball->body.x == bottom_bar->body[0].x + bottom_bar->length / 2) && (ball->body.y == bottom_bar->body[0].y - 1)) {
+		ball->direction = 0;
+	} else if ((ball->body.x >= bottom_bar->body[0].x && ball->body.x < bottom_bar->body[0].x + bottom_bar->length / 2) && ball->body.y == bottom_bar->body[0].y - 1)
+	{
+		ball->direction = 2;
+	} else if ((ball->body.x > bottom_bar->body[0].x + bottom_bar->length / 2) && ball->body.y == bottom_bar->body[0].y - 1) {
+		ball->direction = 3;
+	}
+}
+
+unsigned char check_for_collision_boundaries(WINDOW *window,Ball *ball) {
+	// if the ball is hitting the top boundary
+	if (ball->body.y <= 1) {
+		if (ball->direction == 0) {
+			ball->direction = 1;
+		}
+		else if (ball->direction == 2) {
+			ball->direction = 4;
+		}
+		else if (ball->direction == 3) {
+			ball->direction = 5;
+		}
+	}
+	// if the ball is hitting the bottom boundary game over
+	else if (ball->body.y >= getmaxy(window)) {
+		return 1;
+	}
+	else if (ball->body.x <= 1) {
+		if (ball->direction == 0 || ball->direction == 2) {
+			ball->direction = 3;
+		} 
+		else if (ball->direction == 1 || ball->direction == 4) {
+			ball->direction = 5;
+		}
+	}
+	// if ball is hitting the right side
+	else if (ball->body.x >= getmaxx(window) - 2) {
+		if (ball->direction == 0 || ball->direction == 3) {
+			ball->direction = 2;
+		} else if (ball->direction == 1 || ball->direction == 5) {
+			ball->direction = 4;
+		}
+	}
+	return 0;
 }
 
 void display_block(WINDOW *window, Block *block) {
@@ -114,8 +192,6 @@ void display_bottom_bar(WINDOW *window, Bar* bottom_bar) {
 	}
 	wrefresh(window);
 }
-
-pthread_mutex_t ncurses_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void handle_user_input(WINDOW *window, Bar *bottom_bar) {
 	int ch = getch();
@@ -168,7 +244,7 @@ void *handle_user_input_thread(void *args) {
 	return NULL;
 }
 
-void monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball) {
+unsigned char monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball) {
 	unsigned char blocks_left = NUM_OF_BLOCKS(level);
 
 	// Create a struct to hold the arguments for the new thread
@@ -183,8 +259,14 @@ void monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *b
 	while (blocks_left > 0) {
 		pthread_mutex_lock(&ncurses_mutex);
 		move_ball(window, ball);
+		debug(window, ball);
+		if (check_for_collision_boundaries(window, ball) == 1) {
+			return 1;
+		}
 		pthread_mutex_unlock(&ncurses_mutex);
-		usleep(300000);
+		check_for_collision_with_block(ball);
+		check_for_collision_with_bar(ball, bottom_bar);
+		usleep(100000);
 	}
 }
 
@@ -198,9 +280,36 @@ void game_loop(WINDOW* window) {
 
 	while (1) {
 		construct_level(window, current_level);
-		monitor_level(window, bottom_bar, current_level, ball);
+		if (monitor_level(window, bottom_bar, current_level, ball) == 1) {
+			print_the_end(window, current_level);
+		}
 		current_level++;
 	}
 	// Clean up and close
 	endwin();
+}
+
+void print_the_end(WINDOW *window, unsigned char current_level) {
+	// move the cursor to the center of the screen
+	move(getmaxy(window) / 2, getmaxx(window) / 2 - 10);
+	printw("Game Over! Your Score: %d", current_level);
+
+	// Below line is used for the message to be printed to stdout otherwise sleep comes first
+	refresh();
+
+	// Refresh the screen to update the changes
+	wrefresh(window);
+	// Wait for a key press before exiting
+	usleep(1500000);
+	nodelay(stdscr, FALSE);
+	getch();
+}
+
+void debug(WINDOW* window, Ball *ball) {
+	// Move the cursor to the bottom of the window and print debugging information
+	move(getmaxy(window), 0);
+	clrtoeol();  // Clear the current line
+	printw("Ball is currently at: %d, %d\n", ball->body.x, ball->body.y);
+	printw("Maxx: %d Maxy: %d", getmaxx(window), getmaxy(window));
+	wrefresh(window);
 }
