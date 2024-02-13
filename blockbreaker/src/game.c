@@ -100,7 +100,26 @@ Block* generate_block(WINDOW *window) {
 
 void check_for_collision_with_block(Ball *ball) {
 	if (is_overlap(ball->body) == 1) {
-		ball->direction = 1;
+		switch (ball->direction) {
+			case 0:
+				ball->direction = 1;
+				break;
+			case 1:
+				ball->direction = 0;
+				break;
+			case 2:
+				ball->direction = 4;
+				break;
+			case 3:
+				ball->direction = 5;
+				break;
+			case 4:
+				ball->direction = 2;
+				break;
+			case 5:
+				ball->direction = 3;
+				break;
+		}
 		game_area[ball->body.x][ball->body.y] = 0;
 	}
 }
