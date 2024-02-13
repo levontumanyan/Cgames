@@ -2,7 +2,7 @@
 #define UTILS_H
 
 #define WINDOW_HEIGHT 20
-#define WINDOW_LENGTH 40
+#define WINDOW_LENGTH 20
 
 #include <stdlib.h>
 #include <time.h>

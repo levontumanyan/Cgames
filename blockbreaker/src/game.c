@@ -1,7 +1,7 @@
 #include "game.h"
 #include "utils.h"
 
-#define NUM_OF_BLOCKS(x) (10 - (x))
+#define NUM_OF_BLOCKS(x) (3 - (x))
 
 pthread_mutex_t ncurses_mutex = PTHREAD_MUTEX_INITIALIZER;
 unsigned char game_area[WINDOW_LENGTH][WINDOW_HEIGHT];
@@ -145,7 +145,7 @@ unsigned char is_overlap_block(Coordinate coordinate, unsigned char length) {
 void check_for_collision_with_bar(Ball *ball, Bar *bottom_bar) {
 	if ((ball->body.x == bottom_bar->body[0].x + bottom_bar->length / 2) && (ball->body.y == bottom_bar->body[0].y - 1)) {
 		ball->direction = 0;
-	} else if ((ball->body.x >= bottom_bar->body[0].x && ball->body.x < bottom_bar->body[0].x + bottom_bar->length / 2) && ball->body.y == bottom_bar->body[0].y - 1)
+	} else if ((ball->body.x >= bottom_bar->body[0].x - 1 && ball->body.x < bottom_bar->body[0].x + bottom_bar->length / 2) && ball->body.y == bottom_bar->body[0].y - 1)
 	{
 		ball->direction = 2;
 	} else if ((ball->body.x > bottom_bar->body[0].x + bottom_bar->length / 2) && (ball->body.x <= bottom_bar->body[0].x + bottom_bar->length) && (ball->body.y == bottom_bar->body[0].y - 1)) {
@@ -268,9 +268,21 @@ void *handle_user_input_thread(void *args) {
 	return NULL;
 }
 
-unsigned char monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball) {
-	unsigned char blocks_left = NUM_OF_BLOCKS(level);
+// if game area is all zeroes then all the blocks have been destroyed and level is over
+// returns 1 if there is still blocks left
+// returns 0 when all the blocks are gone
+unsigned char game_area_clean() {
+	for (unsigned char i = 0; i < WINDOW_LENGTH; i++) {
+		for (unsigned char j = 0; j < WINDOW_HEIGHT; j++) {
+			if (game_area[i][j] == 1) {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
 
+unsigned char monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball) {
 	// Create a struct to hold the arguments for the new thread
 	struct handle_user_input_thread_args targs;
 	targs.window = window;
@@ -280,7 +292,7 @@ unsigned char monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level
 	pthread_t input_thread;
 	pthread_create(&input_thread, NULL, handle_user_input_thread, &targs);
 
-	while (blocks_left > 0) {
+	while (game_area_clean() == 1) {
 		pthread_mutex_lock(&ncurses_mutex);
 		move_ball(window, ball);
 		debug(window, ball);
@@ -295,6 +307,7 @@ unsigned char monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level
 		pthread_mutex_unlock(&ncurses_mutex);
 		usleep(100000);
 	}
+	return 0;
 }
 
 void game_loop(WINDOW* window) {
@@ -305,12 +318,15 @@ void game_loop(WINDOW* window) {
 	Ball *ball = generate_ball(window);
 	display_ball(window, ball);
 
+	// if monitor level returns 1 then the ball went below the bar, game over
+	// if it returns 0 then the user has broken all the blocks and proceeds to next level
 	while (1) {
 		construct_level(window, current_level);
 		if (monitor_level(window, bottom_bar, current_level, ball) == 1) {
 			print_the_end(window, current_level);
+		} else if (monitor_level(window, bottom_bar, current_level, ball) == 0) {
+			current_level++;
 		}
-		current_level++;
 	}
 	// Clean up and close
 	endwin();
