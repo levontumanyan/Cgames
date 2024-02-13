@@ -284,12 +284,15 @@ unsigned char monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level
 		pthread_mutex_lock(&ncurses_mutex);
 		move_ball(window, ball);
 		debug(window, ball);
+		pthread_mutex_unlock(&ncurses_mutex);
 		if (check_for_collision_boundaries(window, ball) == 1) {
 			return 1;
 		}
-		pthread_mutex_unlock(&ncurses_mutex);
 		check_for_collision_with_block(ball);
 		check_for_collision_with_bar(ball, bottom_bar);
+		pthread_mutex_lock(&ncurses_mutex);
+		wrefresh(window);
+		pthread_mutex_unlock(&ncurses_mutex);
 		usleep(100000);
 	}
 }
