@@ -18,9 +18,6 @@ make
 	- accepts the level number
 	- creates the appropriate number of blocks
 	- displays the blocks on the screen
-- when the ball hits the blocks make sure it continues with the same direction
-	- check all the cases whether the block is crushed from top or below
-	- whether the ball was travelling diagonally or straight
 - when the ball collides with the bar make sure it continues with the logical direction
 
 ## Done
@@ -33,6 +30,9 @@ make
 - add diagonal directions for the ball to move as well
 - Have a ball that moves to crush the blocks
 - make sure blocks are not generated on top of each other
+- when the ball hits the blocks make sure it continues with the same direction
+	- check all the cases whether the block is crushed from top or below
+	- whether the ball was travelling diagonally or straight
 
 ## Current Bugs
 
