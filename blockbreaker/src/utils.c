@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <time.h>
-
 #include "utils.h"
 
 WINDOW* initialize_screen() {
@@ -27,12 +24,12 @@ WINDOW* initialize_screen() {
 	return win;
 }
 
-unsigned char* get_random_coordinates(WINDOW* win) {
-	static unsigned char coordinates[2];
+Coordinate get_random_coordinates(WINDOW* win) {
+	static Coordinate coordinate;
 
 	// Generate random x and y coordinates: 0 is x, 1 is y
-	coordinates[0] = rand() % (getmaxx(win) - 4) + 1;
-	coordinates[1] = rand() % (getmaxy(win)/2 - 1) + 1;
+	coordinate.x = rand() % (getmaxx(win) - 4) + 1;
+	coordinate.y = rand() % (getmaxy(win)/2 - 1) + 1;
 
-	return coordinates;
+	return coordinate;
 }

@@ -4,9 +4,13 @@
 #define WINDOW_HEIGHT 20
 #define WINDOW_LENGTH 40
 
+#include <stdlib.h>
+#include <time.h>
 #include <ncurses.h>
 
+#include "game.h"
+
 WINDOW* initialize_screen();
-unsigned char* get_random_coordinates(WINDOW* win);
+Coordinate get_random_coordinates(WINDOW* win);
 
 #endif

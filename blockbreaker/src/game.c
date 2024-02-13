@@ -86,32 +86,28 @@ Block* generate_block(WINDOW *window) {
 	block->length = 3;
 	block->body = malloc(block->length * sizeof(Coordinate));
 	block->health = 1;
-	unsigned char *coordinates;
+	Coordinate coordinate;
 	do {
-		coordinates = get_random_coordinates(window);
-	} while (is_overlap(coordinates, block->length));
+		coordinate = get_random_coordinates(window);
+	} while (is_overlap(coordinate, block->length));
 	for (unsigned char i = 0; i < block->length; i++) {
-		block->body[i].x = coordinates[0] + i;
-		block->body[i].y = coordinates[1];
+		block->body[i].x = coordinate.x + i;
+		block->body[i].y = coordinate.y;
 		game_area[block->body[i].x][block->body[i].y] = 1;  // Mark this coordinate as occupied
 	}
 	return block;
 }
 
 void check_for_collision_with_block(Ball *ball) {
-	unsigned char balls_coordinates[2];
-	balls_coordinates[0] = ball->body.x;
-	balls_coordinates[1] = ball->body.y;
-
-	if (is_overlap(balls_coordinates, 1) == 1) {
+	if (is_overlap(ball->body, 1) == 1) {
 		ball->direction = 1;
-		game_area[balls_coordinates[0]][balls_coordinates[1]] = 0;
+		game_area[ball->body.x][ball->body.y] = 0;
 	}
 }
 
-unsigned char is_overlap(unsigned char* coordinates, unsigned char length) {
+unsigned char is_overlap(Coordinate coordinate, unsigned char length) {
 	for (unsigned char i = 0; i < length; i++) {
-		if (game_area[coordinates[0] + i][coordinates[1]] == 1) {
+		if (game_area[coordinate.x + i][coordinate.y == 1]) {
 			return 1;  // There is an overlap
 		}
 	}
