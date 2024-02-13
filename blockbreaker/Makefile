@@ -18,7 +18,13 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c include/*.h
 	mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-.PHONY: clean
+.PHONY: clean concat
+
+concat_less:
+	@cat $$(find . -name '*.c' -or -name '*.h') > combined_source.txt
+
+concat:
+	@cat $$(find . -name '*.c' -or -name '*.h') | tr -d " \t\n" | sed '/^\s*\/\//d' > combined_source_no_whitespace.txt
 
 clean:
 	rm -rf $(OBJ_DIR)/*.o $(TARGET)
