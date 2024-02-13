@@ -1,15 +1,19 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define NUM_OF_BLOCKS(x) (10 - (x))
+#define MAX_BALLS 3
+
 #include <ncurses.h>
 #include <unistd.h> // sleep function
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
+#include <math.h>
 
 typedef struct {
-	int x;
-	int y;
+	unsigned char x;
+	unsigned char y;
 } Coordinate;
 
 typedef struct {
@@ -25,7 +29,7 @@ typedef struct {
 
 typedef struct {
 	Coordinate body; // Array of coordinates for the ball
-	unsigned char direction; // direction to which the ball is moving - 8 possible dirs
+	Coordinate direction; // direction to which the ball is moving - 8 possible dirs
 } Ball;
 
 struct handle_user_input_thread_args {

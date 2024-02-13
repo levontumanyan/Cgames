@@ -29,7 +29,7 @@ Coordinate get_random_coordinates(WINDOW* win) {
 
 	// Generate random x and y coordinates: 0 is x, 1 is y
 	coordinate.x = rand() % (getmaxx(win) - 4) + 1;
-	coordinate.y = rand() % (getmaxy(win)/2 - 1) + 1;
+	coordinate.y = rand() % (getmaxy(win)/2 - 1) + 2;
 
 	return coordinate;
 }

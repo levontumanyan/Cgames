@@ -38,6 +38,9 @@ make
 - add a function to count the number of blocks remaining and when that reaches to zero, generate a new level
 
 ## Current Bugs
+- when a top block is hit the ball bounces back and forth infinitely
+- somehow more than max balls is being created
+- if a ball goes off the screen it can result in segmentation error
 
 ## Resolved bugs
 

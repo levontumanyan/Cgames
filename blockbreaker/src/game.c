@@ -1,9 +1,6 @@
 #include "game.h"
 #include "utils.h"
 
-#define NUM_OF_BLOCKS(x) (3 - (x))
-#define MAX_BALLS 5
-
 pthread_mutex_t ncurses_mutex = PTHREAD_MUTEX_INITIALIZER;
 unsigned char game_area[WINDOW_LENGTH][WINDOW_HEIGHT];
 Ball *balls[MAX_BALLS];
@@ -16,7 +13,7 @@ void initialize_game() {
 	game_loop(win);
 }
 
-Ball *generate_ball(Coordinate *coordinate) {
+Ball *generate_ball(Coordinate *coordinate, Coordinate *new_direction) {
 	if (num_balls > MAX_BALLS) {
 		return NULL;
 	}
@@ -28,7 +25,8 @@ Ball *generate_ball(Coordinate *coordinate) {
 	}
 	ball->body.x = coordinate->x;
 	ball->body.y = coordinate->y;
-	ball->direction = 3;
+	ball->direction.x = new_direction->x;
+	ball->direction.y = new_direction->y;
 
 	// Add the new ball to the global list of balls
 	balls[num_balls] = ball;
@@ -37,51 +35,12 @@ Ball *generate_ball(Coordinate *coordinate) {
 	return ball;
 }
 
-void display_ball(WINDOW *window, Ball *ball) {
+void move_ball(WINDOW *window, Ball *ball) {
+	mvwaddch(window, ball->body.y, ball->body.x, ' ');
+	ball->body.x += ball->direction.x;
+	ball->body.y += ball->direction.y;
 	mvwaddch(window, ball->body.y, ball->body.x, 'O');
 	wrefresh(window);
-}
-
-void move_ball(WINDOW *window, Ball *ball) {
-	switch (ball->direction) {
-		// up direction
-		case 0:
-			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
-			ball->body.y--;
-			break;
-		// down direction
-		case 1:
-			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
-			ball->body.y++;
-			break;
-		// left diagonal up
-		case 2:
-			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
-			ball->body.y--;
-			ball->body.x--;
-			break;
-		// right diagonal up
-		case 3:
-			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
-			ball->body.y--;
-			ball->body.x++;
-			break;
-		// left diagonal down
-		case 4:
-			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
-			ball->body.y++;
-			ball->body.x--;
-			break;
-		// right diagonal down
-		case 5:
-			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
-			ball->body.y++;
-			ball->body.x++;
-			break;
-		default:
-			break;
-	}
-	display_ball(window, ball);
 }
 
 void construct_level(WINDOW *window, unsigned char level) {
@@ -89,8 +48,10 @@ void construct_level(WINDOW *window, unsigned char level) {
 	Coordinate coordinate;
 	coordinate.x = getmaxx(window)/2 - 2;
 	coordinate.y = getmaxy(window) - 5;
-	Ball *ball = generate_ball(&coordinate);
-	//display_ball(window, ball);
+	Coordinate direction;
+	direction.x = 1;
+	direction.y = -2;
+	Ball *ball = generate_ball(&coordinate, &direction);
 	for(unsigned char i = 0; i < NUM_OF_BLOCKS(level); i++ ) {
 		Block *block = generate_block(window);
 		display_block(window, block);
@@ -116,31 +77,16 @@ Block* generate_block(WINDOW *window) {
 
 void check_for_collision_with_block(Ball *ball) {
 	if (is_overlap(ball->body) == 1) {
-		switch (ball->direction) {
-			case 0:
-				ball->direction = 1;
-				break;
-			case 1:
-				ball->direction = 0;
-				break;
-			case 2:
-				ball->direction = 4;
-				break;
-			case 3:
-				ball->direction = 5;
-				break;
-			case 4:
-				ball->direction = 2;
-				break;
-			case 5:
-				ball->direction = 3;
-				break;
-		}
+		ball->direction.x = -ball->direction.x;
+		ball->direction.y = -ball->direction.y;
 		Coordinate new_coordinate;
 		new_coordinate.x = ball->body.x;
 		new_coordinate.y = ball->body.y;
-		generate_ball(&new_coordinate);
+		Coordinate new_direction;
+		new_direction.x = -ball->direction.x;
+		new_direction.y = -ball->direction.y;
 		game_area[ball->body.x][ball->body.y] = 0;
+		//generate_ball(&new_coordinate, &new_direction);
 	}
 }
 
@@ -163,48 +109,28 @@ unsigned char is_overlap_block(Coordinate coordinate, unsigned char length) {
 }
 
 void check_for_collision_with_bar(Ball *ball, Bar *bottom_bar) {
-	if ((ball->body.x == bottom_bar->body[0].x + bottom_bar->length / 2) && (ball->body.y == bottom_bar->body[0].y - 1)) {
-		ball->direction = 0;
-	} else if ((ball->body.x >= bottom_bar->body[0].x - 1 && ball->body.x < bottom_bar->body[0].x + bottom_bar->length / 2) && ball->body.y == bottom_bar->body[0].y - 1)
-	{
-		ball->direction = 2;
-	} else if ((ball->body.x > bottom_bar->body[0].x + bottom_bar->length / 2) && (ball->body.x <= bottom_bar->body[0].x + bottom_bar->length) && (ball->body.y == bottom_bar->body[0].y - 1)) {
-		ball->direction = 3;
+	if (ball->body.y == bottom_bar->body[0].y - 1 && ball->body.x >= bottom_bar->body->x && ball->body.x <= bottom_bar->body->x + bottom_bar->length) {
+		float relative_position = 2.0 * (ball->body.x - (bottom_bar->body[0].x + bottom_bar->length / 2.0)) / bottom_bar->length;
+		// Map the relative position to a range of integers.
+		// For example, if you want 5 possible directions (-2, -1, 0, 1, 2),
+		// you can multiply the relative position by 2 and round to the nearest integer.
+		ball->direction.x = round(relative_position * 5);
+		ball->direction.y = -1;
 	}
 }
 
-unsigned char check_for_collision_boundaries(WINDOW *window,Ball *ball) {
+unsigned char check_for_collision_boundaries(WINDOW *window, Ball *ball) {
 	// if the ball is hitting the top boundary
 	if (ball->body.y <= 1) {
-		if (ball->direction == 0) {
-			ball->direction = 1;
-		}
-		else if (ball->direction == 2) {
-			ball->direction = 4;
-		}
-		else if (ball->direction == 3) {
-			ball->direction = 5;
-		}
+		ball->direction.y = -ball->direction.y;
+	}
+	// if the ball is hitting the left or right boundary
+	else if (ball->body.x <= 1 || ball->body.x >= getmaxx(window) - 2) {
+		ball->direction.x = -ball->direction.x;
 	}
 	// if the ball is hitting the bottom boundary game over
 	else if (ball->body.y >= getmaxy(window)) {
 		return 1;
-	}
-	else if (ball->body.x <= 1) {
-		if (ball->direction == 0 || ball->direction == 2) {
-			ball->direction = 3;
-		} 
-		else if (ball->direction == 1 || ball->direction == 4) {
-			ball->direction = 5;
-		}
-	}
-	// if ball is hitting the right side
-	else if (ball->body.x >= getmaxx(window) - 2) {
-		if (ball->direction == 0 || ball->direction == 3) {
-			ball->direction = 2;
-		} else if (ball->direction == 1 || ball->direction == 5) {
-			ball->direction = 4;
-		}
 	}
 	return 0;
 }
@@ -219,7 +145,7 @@ void display_block(WINDOW *window, Block *block) {
 
 Bar *generate_bottom_bar(WINDOW *window) {
 	Bar *bar = malloc(sizeof(Bar));
-	bar->length = 5;
+	bar->length = 7;
 	bar->body = malloc(bar->length * sizeof(Coordinate));
 	
 	for (unsigned char i = 0; i < bar->length; i++) {
@@ -321,9 +247,6 @@ unsigned char monitor_level(WINDOW *window, Bar *bottom_bar) {
 		}
 		pthread_mutex_unlock(&ncurses_mutex);
 		for (int i = 0; i < num_balls; i++) {
-			check_for_collision_with_block(balls[i]);
-			check_for_collision_with_bar(balls[i], bottom_bar);
-
 			if (check_for_collision_boundaries(window, balls[i]) == 1) {
 				free(balls[i]);
 				// Shift all the balls after this one to the left in the array
@@ -334,6 +257,9 @@ unsigned char monitor_level(WINDOW *window, Bar *bottom_bar) {
 				// Decrease i so that the next iteration checks the same index again
 				i--;
 			}
+
+			check_for_collision_with_block(balls[i]);
+			check_for_collision_with_bar(balls[i], bottom_bar);
 		}
 		pthread_mutex_lock(&ncurses_mutex);
 		wrefresh(window);
