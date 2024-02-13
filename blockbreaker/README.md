@@ -12,7 +12,9 @@ make
 ## How to play the game
 
 ## Todos
-- add a variable to count the number of blocks remaining and when that reaches to zero, generate a new level
+- add a perk that generates another ball if a block is hit
+- when a level is over make sure to free the memory for the blocks - destroylevel function
+- create a variable that keeps track of the number of balls
 - create levels when all the blocks are broken proceed to next level - function name constructlevel
 	- accepts the level number
 	- creates the appropriate number of blocks
@@ -33,6 +35,7 @@ make
 - when the ball hits the blocks make sure it continues with the same direction
 	- check all the cases whether the block is crushed from top or below
 	- whether the ball was travelling diagonally or straight
+- add a function to count the number of blocks remaining and when that reaches to zero, generate a new level
 
 ## Current Bugs
 

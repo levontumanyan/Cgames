@@ -2,9 +2,12 @@
 #include "utils.h"
 
 #define NUM_OF_BLOCKS(x) (3 - (x))
+#define MAX_BALLS 5
 
 pthread_mutex_t ncurses_mutex = PTHREAD_MUTEX_INITIALIZER;
 unsigned char game_area[WINDOW_LENGTH][WINDOW_HEIGHT];
+Ball *balls[MAX_BALLS];
+int num_balls = 0;
 
 void initialize_game() {
 	// Seed the random number generator
@@ -13,11 +16,24 @@ void initialize_game() {
 	game_loop(win);
 }
 
-Ball *generate_ball(WINDOW *window) {
+Ball *generate_ball(Coordinate *coordinate) {
+	if (num_balls > MAX_BALLS) {
+		return NULL;
+	}
+
 	Ball *ball = malloc(sizeof(Ball));
-	ball->body.x = getmaxx(window)/2 - 2;
-	ball->body.y = getmaxy(window) - 5;
+	if (ball == NULL) {
+		// Handle error: malloc failed
+		return NULL;
+	}
+	ball->body.x = coordinate->x;
+	ball->body.y = coordinate->y;
 	ball->direction = 3;
+
+	// Add the new ball to the global list of balls
+	balls[num_balls] = ball;
+	num_balls++;
+
 	return ball;
 }
 
@@ -32,49 +48,49 @@ void move_ball(WINDOW *window, Ball *ball) {
 		case 0:
 			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
 			ball->body.y--;
-			display_ball(window, ball);
 			break;
 		// down direction
 		case 1:
 			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
 			ball->body.y++;
-			display_ball(window, ball);
 			break;
 		// left diagonal up
 		case 2:
 			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
 			ball->body.y--;
 			ball->body.x--;
-			display_ball(window, ball);
 			break;
 		// right diagonal up
 		case 3:
 			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
 			ball->body.y--;
 			ball->body.x++;
-			display_ball(window, ball);
 			break;
 		// left diagonal down
 		case 4:
 			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
 			ball->body.y++;
 			ball->body.x--;
-			display_ball(window, ball);
 			break;
 		// right diagonal down
 		case 5:
 			mvwaddch(window, ball->body.y, ball->body.x, ' ');	
 			ball->body.y++;
 			ball->body.x++;
-			display_ball(window, ball);
 			break;
 		default:
 			break;
 	}
+	display_ball(window, ball);
 }
 
 void construct_level(WINDOW *window, unsigned char level) {
 	// how many blocks to display
+	Coordinate coordinate;
+	coordinate.x = getmaxx(window)/2 - 2;
+	coordinate.y = getmaxy(window) - 5;
+	Ball *ball = generate_ball(&coordinate);
+	//display_ball(window, ball);
 	for(unsigned char i = 0; i < NUM_OF_BLOCKS(level); i++ ) {
 		Block *block = generate_block(window);
 		display_block(window, block);
@@ -120,6 +136,10 @@ void check_for_collision_with_block(Ball *ball) {
 				ball->direction = 3;
 				break;
 		}
+		Coordinate new_coordinate;
+		new_coordinate.x = ball->body.x;
+		new_coordinate.y = ball->body.y;
+		generate_ball(&new_coordinate);
 		game_area[ball->body.x][ball->body.y] = 0;
 	}
 }
@@ -268,9 +288,10 @@ void *handle_user_input_thread(void *args) {
 	return NULL;
 }
 
-// if game area is all zeroes then all the blocks have been destroyed and level is over
-// returns 1 if there is still blocks left
-// returns 0 when all the blocks are gone
+/* if game area is all zeroes then all the blocks have been destroyed and level is over
+returns 1 if there is still blocks left
+returns 0 when all the blocks are gone
+*/
 unsigned char game_area_clean() {
 	for (unsigned char i = 0; i < WINDOW_LENGTH; i++) {
 		for (unsigned char j = 0; j < WINDOW_HEIGHT; j++) {
@@ -282,7 +303,7 @@ unsigned char game_area_clean() {
 	return 0;
 }
 
-unsigned char monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level, Ball *ball) {
+unsigned char monitor_level(WINDOW *window, Bar *bottom_bar) {
 	// Create a struct to hold the arguments for the new thread
 	struct handle_user_input_thread_args targs;
 	targs.window = window;
@@ -294,17 +315,33 @@ unsigned char monitor_level(WINDOW *window, Bar *bottom_bar, unsigned char level
 
 	while (game_area_clean() == 1) {
 		pthread_mutex_lock(&ncurses_mutex);
-		move_ball(window, ball);
-		debug(window, ball);
-		pthread_mutex_unlock(&ncurses_mutex);
-		if (check_for_collision_boundaries(window, ball) == 1) {
-			return 1;
+		for (int i = 0; i < num_balls; i++) {
+			move_ball(window, balls[i]);
+			// debug(window, ball);
 		}
-		check_for_collision_with_block(ball);
-		check_for_collision_with_bar(ball, bottom_bar);
+		pthread_mutex_unlock(&ncurses_mutex);
+		for (int i = 0; i < num_balls; i++) {
+			check_for_collision_with_block(balls[i]);
+			check_for_collision_with_bar(balls[i], bottom_bar);
+
+			if (check_for_collision_boundaries(window, balls[i]) == 1) {
+				free(balls[i]);
+				// Shift all the balls after this one to the left in the array
+				for (int j = i; j < num_balls - 1; j++) {
+					balls[j] = balls[j + 1];
+				}
+				num_balls--;
+				// Decrease i so that the next iteration checks the same index again
+				i--;
+			}
+		}
 		pthread_mutex_lock(&ncurses_mutex);
 		wrefresh(window);
 		pthread_mutex_unlock(&ncurses_mutex);
+		// no more balls left game over
+		if (num_balls <= 0) {
+			return 1;
+		}
 		usleep(100000);
 	}
 	return 0;
@@ -315,16 +352,14 @@ void game_loop(WINDOW* window) {
 	unsigned char level_over = 0;
 	Bar *bottom_bar = generate_bottom_bar(window);
 	display_bottom_bar(window, bottom_bar);
-	Ball *ball = generate_ball(window);
-	display_ball(window, ball);
 
 	// if monitor level returns 1 then the ball went below the bar, game over
 	// if it returns 0 then the user has broken all the blocks and proceeds to next level
 	while (1) {
 		construct_level(window, current_level);
-		if (monitor_level(window, bottom_bar, current_level, ball) == 1) {
+		if (monitor_level(window, bottom_bar) == 1) {
 			print_the_end(window, current_level);
-		} else if (monitor_level(window, bottom_bar, current_level, ball) == 0) {
+		} else if (monitor_level(window, bottom_bar) == 0) {
 			current_level++;
 		}
 	}
