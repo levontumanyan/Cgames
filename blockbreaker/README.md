@@ -13,6 +13,7 @@ make
 
 ## Todos
 - create a game loop
+- add a variable to count the number of blocks remaining and when that reaches to zero, generate a new level
 - create levels when all the blocks are broken proceed to next level - function name constructlevel
 	- accepts the level number
 	- creates the appropriate number of blocks

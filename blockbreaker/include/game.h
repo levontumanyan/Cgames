@@ -47,7 +47,8 @@ void display_bottom_bar(WINDOW *window, Bar* bottom_bar);
 Block* generate_block(WINDOW *window);
 void display_block(WINDOW *window, Block *block);
 
-unsigned char is_overlap(Coordinate coordinate, unsigned char length);
+unsigned char is_overlap(Coordinate coordinate);
+unsigned char is_overlap_block(Coordinate coordinate, unsigned char length);
 
 void check_for_collision_with_block(Ball *ball);
 void check_for_collision_with_bar(Ball *ball, Bar *bottom_bar);

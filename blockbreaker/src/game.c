@@ -89,7 +89,7 @@ Block* generate_block(WINDOW *window) {
 	Coordinate coordinate;
 	do {
 		coordinate = get_random_coordinates(window);
-	} while (is_overlap(coordinate, block->length));
+	} while (is_overlap_block(coordinate, block->length));
 	for (unsigned char i = 0; i < block->length; i++) {
 		block->body[i].x = coordinate.x + i;
 		block->body[i].y = coordinate.y;
@@ -99,13 +99,22 @@ Block* generate_block(WINDOW *window) {
 }
 
 void check_for_collision_with_block(Ball *ball) {
-	if (is_overlap(ball->body, 1) == 1) {
+	if (is_overlap(ball->body) == 1) {
 		ball->direction = 1;
 		game_area[ball->body.x][ball->body.y] = 0;
 	}
 }
 
-unsigned char is_overlap(Coordinate coordinate, unsigned char length) {
+// this one is used for the ball hitting the blocks
+unsigned char is_overlap(Coordinate coordinate) {
+	if (game_area[coordinate.x][coordinate.y] == 1) {
+		return 1;  // There is an overlap
+	}
+	return 0; // No overlap
+}
+
+// this is only for the purpose of blocks not being generated on top of each other
+unsigned char is_overlap_block(Coordinate coordinate, unsigned char length) {
 	for (unsigned char i = 0; i < length; i++) {
 		if (game_area[coordinate.x + i][coordinate.y == 1]) {
 			return 1;  // There is an overlap
