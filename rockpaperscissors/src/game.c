@@ -8,7 +8,7 @@ void game_loop() {
 		if (new_game == NULL) {
 			continue;
 		}
-		monitor_game(new_game);
+		monitor_game(window, new_game);
 		destroy_game(new_game);
 	}
 }
@@ -29,8 +29,9 @@ Game *start_game() {
 	return game;
 }
 
-void monitor_game(Game *game) {
+void monitor_game(WINDOW *win, Game *game) {
 	while(1) {
+		draw_board(win);
 		if (game->game_over == 1) {
 			break;
 		}
