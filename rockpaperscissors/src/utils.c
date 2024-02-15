@@ -61,10 +61,7 @@ void draw_board(WINDOW *win) {
 			whline(win, ACS_VLINE, 1);
 		}
 	}
-	draw_x(win, 1, 3, START_X, START_Y);
-	draw_x(win, 2, 3, START_X, START_Y);
-	draw_x(win, 1, 1, START_X, START_Y);
-	draw_o(win, 3, 3, START_X, START_Y);
-	draw_o(win, 2, 2, START_X, START_Y);
+	draw_x(win, 2, 2, START_X, START_Y);
+	draw_o(win, 1, 1, START_X, START_Y);
 	wrefresh(win);
 }
