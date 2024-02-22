@@ -1,6 +1,6 @@
 CC := clang
 CFLAGS := -Wall -Wextra -Iinclude
-LDFLAGS := -lncurses -lpthread
+LDFLAGS := -lncurses
 
 SRC_DIR := src
 OBJ_DIR := bin
