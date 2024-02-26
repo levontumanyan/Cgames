@@ -18,7 +18,6 @@ Game *start_game() {
 	if (game == NULL) {
 		return NULL;
 	}
-	game->game_over = 0;
 	// turn this into a random function
 	game->turn = 1;
 
@@ -34,16 +33,23 @@ Game *start_game() {
 void monitor_game(WINDOW *win, Game *game) {
 	while(1) {
 		draw_board(win);
-		if (game->game_over == 1) {
+		if (check_winning_condition(game) == 1) {
 			break;
 		}
 	}
 }
 
 unsigned char check_winning_condition(Game *game) {
-	// idea will be take the board and check for a line or diagonal full of 1s or 2s
+	// idea will be take the board and check for a column, row or diagonal full of 1s or 2s
 	// return 1 if there is a winner, 0 otherwise
 	// check rows for the sum is my idea
+	if (check_winning_condition_row(game) == 1 || check_winning_condition_column(game) == 1 || check_winning_condition_diagonal(game) == 1) {
+		return 1;
+	}
+	return 0;
+}
+
+unsigned char check_winning_condition_row(Game *game) {
 	unsigned char row_sum = 0;
 	for (unsigned char i = 0; i < SQUARE_DIMENSION; i++) {
 		for (unsigned char j = 0; j < SQUARE_DIMENSION; j++) {
@@ -53,6 +59,47 @@ unsigned char check_winning_condition(Game *game) {
 			return 1;
 		}
 	}
+	return 0;
+}
+
+unsigned char check_winning_condition_column(Game *game) {
+	unsigned char col_sum = 0;
+	for (unsigned char j = 0; j < SQUARE_DIMENSION; j++) {
+		for (unsigned char i = 0; i < SQUARE_DIMENSION; i++) {
+			col_sum += game->board[i][j];
+		}
+		if (col_sum == SQUARE_DIMENSION || col_sum == 0) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+unsigned char check_winning_condition_diagonal(Game *game) {
+	unsigned char diag_sum = 0;
+	for (unsigned char i = 0; i < SQUARE_DIMENSION; i++) {
+		for (unsigned char j = 0; j < SQUARE_DIMENSION; j++) {
+			if (i == j) {
+				diag_sum += game->board[i][j];
+			}
+		}
+	}
+	if (diag_sum == SQUARE_DIMENSION || diag_sum == 0) {
+		return 1;
+	}
+	// now let's check for the bottom to top left to right diagonal sum
+	unsigned char diag_sum = 0;
+	for (unsigned char i = SQUARE_DIMENSION - 1; i > -1; i++) {
+		for (unsigned char j = SQUARE_DIMENSION - 1; j > -1; j++) {
+			if (i == j) {
+				diag_sum += game->board[i][j];
+			}
+		}
+	}
+	if (diag_sum == SQUARE_DIMENSION || diag_sum == 0) {
+		return 1;
+	}
+	return 0;
 }
 
 void destroy_game(Game *game) {

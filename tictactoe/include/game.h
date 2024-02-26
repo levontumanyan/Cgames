@@ -8,7 +8,6 @@
 #define SQUARE_DIMENSION 3
 
 typedef struct {
-	unsigned char game_over;
 	unsigned char board[SQUARE_DIMENSION][SQUARE_DIMENSION];
 	// which player's turn it is currently
 	unsigned char turn;
