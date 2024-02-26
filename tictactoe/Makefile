@@ -1,6 +1,7 @@
 CC := clang
-CFLAGS := -Wall -Wextra -Iinclude
-LDFLAGS := -lncurses
+CFLAGS := -Wall -Wextra -I/opt/homebrew/Cellar/allegro/5.2.9.1/include
+LDFLAGS := -lallegro -lallegro_main
+LIB=-L/opt/homebrew/Cellar/allegro/5.2.9.1/lib
 
 SRC_DIR := src
 OBJ_DIR := bin
@@ -17,11 +18,11 @@ TEST_SRC_FILES := $(filter-out src/main.c, $(SRC_FILES))
 TEST_TARGET := $(BIN_DIR)/test_runner
 
 $(TARGET): $(OBJ_FILES)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) $(LIB) -o $@ $^ $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c include/*.h
 	mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(LIB) -c -o $@ $<
 
 $(TEST_TARGET): $(TEST_DIR)/test_runner.c $(TEST_SRC_FILES) $(TEST_FILES)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
