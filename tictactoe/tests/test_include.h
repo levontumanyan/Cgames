@@ -3,7 +3,7 @@
 
 #include <game.h>
 
-void test_game_not_over(Game *game);
+// void test_game_not_over(Game *game);
 void test_game_board(Game *game);
 void test_winning_condition_row();
 

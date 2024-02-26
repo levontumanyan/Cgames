@@ -33,12 +33,21 @@ Game *start_game() {
 void monitor_game(WINDOW *win, Game *game) {
 	while(1) {
 		draw_board(win);
-		if (check_winning_condition(game) == 1) {
+		get_mouse_event(win);
+		//print_click(win, 1, 1);
+		/* if (check_winning_condition(game) == 1) {
+			endwin();
 			break;
-		}
+		} */
+		/* move(getmaxy(win) - 10, 10);
+		printw("Mouse clicked at x: y:");
+		wrefresh(win);
+		
+		sleep(1); */
 	}
 }
 
+// change later to announce which person won!
 unsigned char check_winning_condition(Game *game) {
 	// idea will be take the board and check for a column, row or diagonal full of 1s or 2s
 	// return 1 if there is a winner, 0 otherwise
@@ -88,9 +97,9 @@ unsigned char check_winning_condition_diagonal(Game *game) {
 		return 1;
 	}
 	// now let's check for the bottom to top left to right diagonal sum
-	unsigned char diag_sum = 0;
-	for (unsigned char i = SQUARE_DIMENSION - 1; i > -1; i++) {
-		for (unsigned char j = SQUARE_DIMENSION - 1; j > -1; j++) {
+	diag_sum = 0;
+	for (unsigned char i = SQUARE_DIMENSION - 1; i >= 0; i++) {
+		for (unsigned char j = SQUARE_DIMENSION - 1; j >= 0; j++) {
 			if (i == j) {
 				diag_sum += game->board[i][j];
 			}

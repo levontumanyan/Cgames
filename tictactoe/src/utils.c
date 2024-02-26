@@ -6,27 +6,72 @@ const int GRID_COLS = 3;
 const int CELL_SIZE = 5;
 
 WINDOW* initialize_screen() {
-	// Initialize ncurses
-	initscr();
-	noecho();
-	cbreak();
-	curs_set(0); // Make the cursor invisible
+	ALLEGRO_DISPLAY *display = NULL;
 
-	// Create a window
-	WINDOW *win = newwin(WINDOW_HEIGHT, WINDOW_LENGTH, 0, 0);
+    if(!al_init()) {
+        fprintf(stderr, "failed to initialize allegro!\n");
+        return -1;
+    }
 
-	// Enable non-blocking input
-	nodelay(stdscr, TRUE);
+    display = al_create_display(640, 480);
+    if(!display) {
+        fprintf(stderr, "failed to create display!\n");
+        return -1;
+    }
 
-	// Enable keypad
-	keypad(stdscr, TRUE);
+    al_clear_to_color(al_map_rgb(0,0,0));
 
-	// Display the window
-	refresh();
-	box(win, 0, 0);
-	wrefresh(win);
+    al_flip_display();
 
-	return win;
+    al_rest(5.0);
+
+	return display;
+}
+
+/* 
+void get_mouse_event(WINDOW *win) {
+	int c;
+	MEVENT event;
+
+	c = wgetch(win);
+	switch(c)
+	{	
+		case KEY_MOUSE:
+		if (getmouse(&event) == OK) {	
+			// When the user clicks left mouse button
+			if(event.bstate & BUTTON1_PRESSED)
+			{	
+				print_click(event.x, event.y);	
+			}
+		}
+	}
+} 
+*/
+
+void get_mouse_event(WINDOW *win) {
+	int ch;
+	MEVENT event;
+
+	while ((ch = getch()) != 'q') {
+		if (ch == KEY_MOUSE) {
+			if (getmouse(&event) == OK) {
+				if (event.bstate & BUTTON1_PRESSED) {
+					mvprintw(0, 0, "Left-clicked at coordinates: (%d, %d)", event.x, event.y);
+				} else if (event.bstate & BUTTON2_PRESSED) {
+					mvprintw(0, 0, "Right-clicked at coordinates: (%d, %d)", event.x, event.y);
+				} else if (event.bstate & BUTTON3_PRESSED) {
+					mvprintw(0, 0, "Middle-clicked at coordinates: (%d, %d)", event.x, event.y);
+				}
+				refresh();
+			}
+		}
+	}
+}
+
+void print_click(WINDOW *win, int x, int y) {
+	// move(getmaxy(win) - 1, 0);
+	// printw("Mouse clicked at x: %d, y: %d", x, y);
+	mvwprintw(win, 1, 1, "Mouse clicked at x: %d, y: %d", x, y);
 }
 
 void draw_x(WINDOW *win, unsigned char row, unsigned char col, unsigned char START_X, unsigned char START_Y) {
@@ -65,3 +110,5 @@ void draw_board(WINDOW *win) {
 	draw_o(win, 1, 1, START_X, START_Y);
 	wrefresh(win);
 }
+
+
