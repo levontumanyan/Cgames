@@ -5,7 +5,7 @@ const int GRID_ROWS = 3;
 const int GRID_COLS = 3;
 const int CELL_SIZE = 5;
 
-WINDOW* initialize_screen() {
+ALLEGRO_DISPLAY* initialize_screen() {
 	ALLEGRO_DISPLAY *display = NULL;
 
     if(!al_init()) {
@@ -28,50 +28,13 @@ WINDOW* initialize_screen() {
 	return display;
 }
 
-/* 
 void get_mouse_event(WINDOW *win) {
-	int c;
-	MEVENT event;
-
-	c = wgetch(win);
-	switch(c)
-	{	
-		case KEY_MOUSE:
-		if (getmouse(&event) == OK) {	
-			// When the user clicks left mouse button
-			if(event.bstate & BUTTON1_PRESSED)
-			{	
-				print_click(event.x, event.y);	
-			}
-		}
-	}
-} 
-*/
-
-void get_mouse_event(WINDOW *win) {
-	int ch;
-	MEVENT event;
-
-	while ((ch = getch()) != 'q') {
-		if (ch == KEY_MOUSE) {
-			if (getmouse(&event) == OK) {
-				if (event.bstate & BUTTON1_PRESSED) {
-					mvprintw(0, 0, "Left-clicked at coordinates: (%d, %d)", event.x, event.y);
-				} else if (event.bstate & BUTTON2_PRESSED) {
-					mvprintw(0, 0, "Right-clicked at coordinates: (%d, %d)", event.x, event.y);
-				} else if (event.bstate & BUTTON3_PRESSED) {
-					mvprintw(0, 0, "Middle-clicked at coordinates: (%d, %d)", event.x, event.y);
-				}
-				refresh();
-			}
-		}
-	}
+	
 }
 
 void print_click(WINDOW *win, int x, int y) {
 	// move(getmaxy(win) - 1, 0);
 	// printw("Mouse clicked at x: %d, y: %d", x, y);
-	mvwprintw(win, 1, 1, "Mouse clicked at x: %d, y: %d", x, y);
 }
 
 void draw_x(WINDOW *win, unsigned char row, unsigned char col, unsigned char START_X, unsigned char START_Y) {

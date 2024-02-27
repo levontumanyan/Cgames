@@ -2,14 +2,14 @@
 #include "utils.h"
 
 void game_loop() {
-	WINDOW *window = initialize_screen();
+	// WINDOW *window = initialize_screen();
 	while(1) {
 		Game *new_game = start_game();
 		if (new_game == NULL) {
 			continue;
 		}
-		monitor_game(window, new_game);
-		destroy_game(new_game);
+		//monitor_game(window, new_game);
+		//destroy_game(new_game);
 	}
 }
 
@@ -30,22 +30,22 @@ Game *start_game() {
 	return game;
 }
 
-void monitor_game(WINDOW *win, Game *game) {
+/* void monitor_game(WINDOW *win, Game *game) {
 	while(1) {
 		draw_board(win);
 		get_mouse_event(win);
 		//print_click(win, 1, 1);
-		/* if (check_winning_condition(game) == 1) {
+		if (check_winning_condition(game) == 1) {
 			endwin();
 			break;
-		} */
-		/* move(getmaxy(win) - 10, 10);
+		}
+		move(getmaxy(win) - 10, 10);
 		printw("Mouse clicked at x: y:");
 		wrefresh(win);
 		
-		sleep(1); */
+		sleep(1);
 	}
-}
+} */
 
 // change later to announce which person won!
 unsigned char check_winning_condition(Game *game) {
