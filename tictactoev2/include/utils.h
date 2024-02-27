@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <allegro5/allegro.h>
+#include <allegro5/bitmap.h>
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 1024

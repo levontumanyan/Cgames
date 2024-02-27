@@ -3,14 +3,17 @@
 
 void game_loop() {
 	ALLEGRO_DISPLAY *display = initialize_display();
+	ALLEGRO_BITMAP *bitmap = al_create_bitmap(SCREEN_WIDTH, SCREEN_HEIGHT);
+	al_set_target_bitmap(bitmap);
 	while(1) {
 		Game *new_game = start_game();
 		if (new_game == NULL) {
 			continue;
 		}
 		monitor_game(display, new_game);
-		//destroy_game(new_game);
+		destroy_game(new_game);
 	}
+	destroy_all(display, bitmap);
 }
 
 Game *start_game() {
@@ -87,7 +90,7 @@ void draw_x(ALLEGRO_DISPLAY *display, unsigned char row, unsigned char col) {
 }
 
 void draw_o(ALLEGRO_DISPLAY *display, unsigned char row, unsigned char col) {
-	
+
 }
 
 // change later to announce which person won!
@@ -158,6 +161,7 @@ void destroy_game(Game *game) {
 	free(game);
 }
 
-void destroy_all(ALLEGRO_DISPLAY* display) {
+void destroy_all(ALLEGRO_DISPLAY* display, ALLEGRO_BITMAP *bitmap) {
 	al_destroy_display(display);
+	al_destroy_bitmap(bitmap);
 }

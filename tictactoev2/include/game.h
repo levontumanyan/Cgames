@@ -25,7 +25,7 @@ void draw_x(ALLEGRO_DISPLAY *display, unsigned char row, unsigned char col);
 void draw_o(ALLEGRO_DISPLAY *display, unsigned char row, unsigned char col);
 
 void destroy_game(Game *game);
-void destroy_all(ALLEGRO_DISPLAY* display);
+void destroy_all(ALLEGRO_DISPLAY* display, ALLEGRO_BITMAP *bitmap);
 
 unsigned char check_winning_condition(Game *game);
 unsigned char check_winning_condition_row(Game *game);
