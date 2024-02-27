@@ -1,0 +1,11 @@
+#ifndef UTILS_H
+#define UTILS_H
+
+#include <allegro5/allegro.h>
+
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 1024
+
+ALLEGRO_DISPLAY* initialize_display();
+
+#endif
