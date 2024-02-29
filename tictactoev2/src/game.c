@@ -47,8 +47,27 @@ ALLEGRO_MOUSE_EVENT get_mouse_click_event(ALLEGRO_EVENT_QUEUE *event_queue) {
 	}
 }
 
-Cell get_cell_from_click_event(ALLEGRO_MOUSE_EVENT click_event) {
-	Cell cell = {2, 4};
+// return 1 if out ouf bounds and 0 otherwise
+unsigned char check_click_out_of_bounds(ALLEGRO_DISPLAY *display, ALLEGRO_MOUSE_EVENT click_event) {
+	if (click_event.x > START_X && click_event.x < END_X && click_event.y > START_Y && click_event.y < END_Y) {
+		return 0;
+	}
+	return 1;
+}
+
+Cell get_cell_from_click_event(ALLEGRO_DISPLAY *display, ALLEGRO_MOUSE_EVENT click_event) {
+	Cell cell = { 255, 255 };
+	
+	// check if click is out of bounds
+	if (check_click_out_of_bounds(display, click_event) == 1) {
+		return cell;
+	}
+	
+	// get the row first - depends on the y coordinate
+	unsigned char row = ((click_event.y - START_Y) / CELL_HEIGHT);
+	unsigned char col = ((click_event.x - START_X) / CELL_WIDTH);
+	cell = (Cell) { row, col };
+
 	return cell;
 }
 
@@ -59,7 +78,9 @@ void monitor_game(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, ALLEGRO_EVEN
 		click_event = get_mouse_click_event(event_queue);
 		unsigned short mouse_click_x = click_event.x; 
 		unsigned short mouse_click_y = click_event.y;
+		Cell clicked_cell = get_cell_from_click_event(display, click_event);
 		printf("Time: %f, The mouse is at: (%d, %d)\n", click_event.timestamp, mouse_click_x, mouse_click_y);
+		printf("Time: %f, The cell position is: (%d, %d)\n", click_event.timestamp, clicked_cell.row, clicked_cell.col );
 		
 		//draw_x(display, bitmap, 1, 1);
 		//draw_x(display, bitmap, 0, 1);
@@ -70,9 +91,6 @@ void monitor_game(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, ALLEGRO_EVEN
 	}
 }
 
-#define CELL_WIDTH 150
-#define CELL_HEIGHT 150
-
 void draw_board(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap) {
 	// set bitmap as the target for drawing
 	al_set_target_bitmap(bitmap);
@@ -80,22 +98,12 @@ void draw_board(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap) {
 	// Clear the bitmap
 	al_clear_to_color(al_map_rgb(0, 0, 0));
 
-	// Calculate the size of each cell
-	int width = al_get_display_width(display);
-	int height = al_get_display_height(display);
-
-	int start_x = width / 2 - SQUARE_DIMENSION * CELL_WIDTH;
-	int start_y = height / 2 - SQUARE_DIMENSION * CELL_HEIGHT;
-
-	int end_x = start_x + SQUARE_DIMENSION * CELL_WIDTH;
-	int end_y = start_y + SQUARE_DIMENSION * CELL_HEIGHT;
-
 	for (unsigned char i = 0; i <= SQUARE_DIMENSION; i++) {
 		// draw the horizontal lines
-		al_draw_line(start_x, start_y + i*CELL_HEIGHT, end_x, start_y + i*CELL_HEIGHT, al_map_rgb(255, 255 ,0), 1);
+		al_draw_line(START_X, START_Y + i*CELL_HEIGHT, END_X, START_Y + i*CELL_HEIGHT, al_map_rgb(255, 255 ,0), 1);
 
 		// draw the horizontal lines
-		al_draw_line(start_x + i*CELL_WIDTH, start_y, start_x + i*CELL_WIDTH, end_y, al_map_rgb(255, 255 ,0), 1);
+		al_draw_line(START_X + i*CELL_WIDTH, START_Y, START_X + i*CELL_WIDTH, END_Y, al_map_rgb(255, 255 ,0), 1);
 	}
 	
 	// Reset the target back to the display

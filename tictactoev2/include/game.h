@@ -9,6 +9,18 @@
 // revisit this later in case if rectangle is also acceptable
 #define SQUARE_DIMENSION 3
 
+// each cell's width and height in pixels
+#define CELL_WIDTH 150
+#define CELL_HEIGHT 150
+
+// Starting x and y coordinates of the board to be drawn
+#define DISPLAY_WIDTH al_get_display_width(display)
+#define DISPLAY_HEIGHT al_get_display_height(display)
+#define START_X ((DISPLAY_WIDTH) / 2 - SQUARE_DIMENSION * CELL_WIDTH)
+#define START_Y ((DISPLAY_HEIGHT) / 2 - SQUARE_DIMENSION * CELL_HEIGHT)
+#define END_X (START_X + SQUARE_DIMENSION * CELL_WIDTH)
+#define END_Y (START_Y + SQUARE_DIMENSION * CELL_HEIGHT)
+
 typedef struct {
 	unsigned char board[SQUARE_DIMENSION][SQUARE_DIMENSION];
 	// which player's turn it is currently
@@ -30,6 +42,7 @@ void draw_x(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap,unsigned char row, 
 void draw_o(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, unsigned char row, unsigned char col);
 
 ALLEGRO_MOUSE_EVENT get_mouse_click_event(ALLEGRO_EVENT_QUEUE *event_queue);
+unsigned char check_click_out_of_bounds(ALLEGRO_DISPLAY *display, ALLEGRO_MOUSE_EVENT click_event);
 
 void destroy_game(Game *game);
 void destroy_all(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_DISPLAY* display, ALLEGRO_BITMAP *bitmap);
