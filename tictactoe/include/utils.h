@@ -2,12 +2,11 @@
 #define UTILS_H
 
 #include <allegro5/allegro.h>
+#include <allegro5/bitmap.h>
 
-#include "game.h"
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 1024
 
-#define WINDOW_HEIGHT 30
-#define WINDOW_LENGTH 50
-
-ALLEGRO_DISPLAY* initialize_screen();
+ALLEGRO_DISPLAY* initialize_display();
 
 #endif
