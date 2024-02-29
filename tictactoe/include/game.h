@@ -1,10 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <time.h> // for the random function to pick a player to start
 #include <stdlib.h>
 #include <unistd.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
+
+#include "utils.h"
 
 // revisit this later in case if rectangle is also acceptable
 #define SQUARE_DIMENSION 3
@@ -23,7 +26,7 @@
 
 typedef struct {
 	unsigned char board[SQUARE_DIMENSION][SQUARE_DIMENSION];
-	// which player's turn it is currently
+	// which player's turn it is currently, 0 for O, 1 for x
 	unsigned char turn;
 } Game;
 

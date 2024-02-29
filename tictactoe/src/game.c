@@ -1,5 +1,4 @@
 #include "game.h"
-#include "utils.h"
 
 void game_loop() {
 	ALLEGRO_DISPLAY *display = initialize_display();
@@ -18,15 +17,20 @@ void game_loop() {
 	destroy_all(event_queue, display, bitmap);
 }
 
+unsigned char random_zero_or_one() {
+	srand(time(0)); // Use current time as seed for random generator
+	return rand() % 2; // Modulo operation to get either 0 or 1
+}
+
 Game *start_game() {
 	Game *game = malloc(sizeof(Game));
 	if (game == NULL) {
 		return NULL;
 	}
 	// turn this into a random function
-	game->turn = 1;
+	game->turn = random_zero_or_one();
 
-	// fill up the game board with 2s each time a user clicks on a box that cell's value in the board will become either 0 or 1. 0 for 0, 1 for x
+	// fill up the game board with 2s each time a user clicks on a box that cell's value in the board will become either 0 or 1. 0 for O, 1 for X
 	for (unsigned char i = 0; i < SQUARE_DIMENSION; i++) {
 		for (unsigned char j = 0; j < SQUARE_DIMENSION; j++) {
 			game->board[i][j] = 2;
@@ -79,15 +83,38 @@ void monitor_game(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, ALLEGRO_EVEN
 		unsigned short mouse_click_x = click_event.x; 
 		unsigned short mouse_click_y = click_event.y;
 		Cell clicked_cell = get_cell_from_click_event(display, click_event);
+		
+		// here check if the cell is already filled up and don't draw over it
+		if (game->board[clicked_cell.row][clicked_cell.col] != 2) {
+			continue;
+		}
+		// this checks is to ignore the out of bounds clicks
+		if (clicked_cell.row == 255 && clicked_cell.col == 255) {
+			continue;
+		}
+		
 		printf("Time: %f, The mouse is at: (%d, %d)\n", click_event.timestamp, mouse_click_x, mouse_click_y);
 		printf("Time: %f, The cell position is: (%d, %d)\n", click_event.timestamp, clicked_cell.row, clicked_cell.col );
-		
-		//draw_x(display, bitmap, 1, 1);
-		//draw_x(display, bitmap, 0, 1);
-		//draw_o(display, bitmap, 2, 2);
+
+		// depending on whose turn it is take the click and draw corresponding symbol
+		// check if that cell is already filled, if so do nothing
+		if (game->turn == 0) {
+			game->board[clicked_cell.row][clicked_cell.col] = 0;
+			draw_o(display, bitmap, clicked_cell.row, clicked_cell.col);
+		}
+		else if (game->turn == 1) {
+			game->board[clicked_cell.row][clicked_cell.col] = 1;
+			draw_x(display, bitmap, clicked_cell.row, clicked_cell.col);
+		}
+		printf("Check winning condition row returned: %c\n", check_winning_condition_row(game));
+		//printf("Check winning condition column returned: %c", check_winning_condition_column(game));
+		//printf("Check winning condition diagonal returned: %c", check_winning_condition(game));
 		/* if (check_winning_condition(game) == 1) {
+			printf("Winner is: player: %c", game->turn);
 			break;
 		} */
+		// Flip the turn
+		game->turn ^= 1;
 	}
 }
 
@@ -172,27 +199,34 @@ unsigned char check_winning_condition(Game *game) {
 }
 
 unsigned char check_winning_condition_row(Game *game) {
-	unsigned char row_sum = 0;
 	for (unsigned char i = 0; i < SQUARE_DIMENSION; i++) {
-		for (unsigned char j = 0; j < SQUARE_DIMENSION; j++) {
-			row_sum += game->board[i][j];
-		}
-		if (row_sum == SQUARE_DIMENSION || row_sum == 0) {
-			return 1;
+		unsigned char first_item = game->board[i][0];
+		for (unsigned char j = 1; j < SQUARE_DIMENSION; j++) {
+			printf("(%u, %u) is %u\n", i, j, game->board[i][j]);
+			if (game->board[i][j] == 2) {
+				return 0;
+			}
+			if (game->board[i][j] != first_item) {
+				return 0;
+			} 
 		}
 	}
-	return 0;
+	printf("All items are equal.\n");
+	return 1;
 }
 
 unsigned char check_winning_condition_column(Game *game) {
 	unsigned char col_sum = 0;
 	for (unsigned char j = 0; j < SQUARE_DIMENSION; j++) {
 		for (unsigned char i = 0; i < SQUARE_DIMENSION; i++) {
+			printf("(%u, %u) is %u\n", i, j, game->board[i][j]);
 			col_sum += game->board[i][j];
 		}
+		printf("Column sum is: %u\n", col_sum);
 		if (col_sum == SQUARE_DIMENSION || col_sum == 0) {
 			return 1;
 		}
+		col_sum = 0;
 	}
 	return 0;
 }
