@@ -48,13 +48,13 @@ ALLEGRO_MOUSE_EVENT get_mouse_click_location(ALLEGRO_BITMAP *bitmap, ALLEGRO_EVE
 void monitor_game(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, ALLEGRO_EVENT_QUEUE *event_queue, Game *game) {
 	draw_board(display, bitmap);
 	while(1) {
-		ALLEGRO_MOUSE_EVENT mouse_event = get_mouse_click_location(bitmap, event_queue);
-		int mouse_click_x = mouse_event.x; 
-		int mouse_click_y = mouse_event.y;
-		printf("The mouse is at: (%d, %d)\n", mouse_click_x, mouse_click_y);
-		/* draw_x(display, bitmap, 1, 1);
+		//ALLEGRO_MOUSE_EVENT mouse_event = get_mouse_click_location(bitmap, event_queue);
+		//int mouse_click_x = mouse_event.x; 
+		//int mouse_click_y = mouse_event.y;
+		//printf("The mouse is at: (%d, %d)\n", mouse_click_x, mouse_click_y);
+		draw_x(display, bitmap, 1, 1);
 		draw_x(display, bitmap, 0, 1);
-		draw_o(display, bitmap, 2, 2); */
+		draw_o(display, bitmap, 2, 2);
 		if (check_winning_condition(game) == 1) {
 			break;
 		}
@@ -134,7 +134,7 @@ void draw_o(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, unsigned char row,
 	int cell_center_x = start_x + col * CELL_WIDTH + CELL_WIDTH / 2;
 	int cell_center_y = start_y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
-	al_draw_circle(cell_center_x, cell_center_y, CELL_HEIGHT / 2, al_map_rgb(255, 255, 0), 1);
+	al_draw_circle(cell_center_x, cell_center_y, (CELL_HEIGHT / 3), al_map_rgb(255, 255, 0), 1);
 	
 	// Reset the target back to the display
 	al_set_target_backbuffer(display);
