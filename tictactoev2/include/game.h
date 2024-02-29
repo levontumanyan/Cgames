@@ -15,6 +15,11 @@ typedef struct {
 	unsigned char turn;
 } Game;
 
+typedef struct {
+	unsigned char row;
+	unsigned char col;
+} Cell;
+
 void game_loop();
 Game *start_game();
 
@@ -24,7 +29,7 @@ void draw_board(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap);
 void draw_x(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap,unsigned char row, unsigned char col);
 void draw_o(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, unsigned char row, unsigned char col);
 
-ALLEGRO_MOUSE_EVENT get_mouse_click_location(ALLEGRO_EVENT_QUEUE *event_queue);
+ALLEGRO_MOUSE_EVENT get_mouse_click_event(ALLEGRO_EVENT_QUEUE *event_queue);
 
 void destroy_game(Game *game);
 void destroy_all(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_DISPLAY* display, ALLEGRO_BITMAP *bitmap);

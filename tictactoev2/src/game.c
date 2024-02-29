@@ -35,7 +35,7 @@ Game *start_game() {
 	return game;
 }
 
-ALLEGRO_MOUSE_EVENT get_mouse_click_location(ALLEGRO_EVENT_QUEUE *event_queue) {
+ALLEGRO_MOUSE_EVENT get_mouse_click_event(ALLEGRO_EVENT_QUEUE *event_queue) {
 	ALLEGRO_EVENT ev;
 	al_register_event_source(event_queue, al_get_mouse_event_source());
 	while (1) {
@@ -47,14 +47,19 @@ ALLEGRO_MOUSE_EVENT get_mouse_click_location(ALLEGRO_EVENT_QUEUE *event_queue) {
 	}
 }
 
+Cell get_cell_from_click_event(ALLEGRO_MOUSE_EVENT click_event) {
+	Cell cell = {2, 4};
+	return cell;
+}
+
 void monitor_game(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, ALLEGRO_EVENT_QUEUE *event_queue, Game *game) {
 	draw_board(display, bitmap);
-	ALLEGRO_MOUSE_EVENT mouse_event;
+	ALLEGRO_MOUSE_EVENT click_event;
 	while(1) {
-		mouse_event = get_mouse_click_location(event_queue);
-		unsigned short mouse_click_x = mouse_event.x; 
-		unsigned short mouse_click_y = mouse_event.y;
-		printf("Time: %f, The mouse is at: (%d, %d)\n", mouse_event.timestamp, mouse_click_x, mouse_click_y);
+		click_event = get_mouse_click_event(event_queue);
+		unsigned short mouse_click_x = click_event.x; 
+		unsigned short mouse_click_y = click_event.y;
+		printf("Time: %f, The mouse is at: (%d, %d)\n", click_event.timestamp, mouse_click_x, mouse_click_y);
 		
 		//draw_x(display, bitmap, 1, 1);
 		//draw_x(display, bitmap, 0, 1);
