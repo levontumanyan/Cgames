@@ -7,7 +7,7 @@ OBJ_DIR := bin
 BIN_DIR := bin
 
 # Define any compile-time flags
-CFLAGS := -Wall -Wextra -I/opt/homebrew/Cellar/allegro/5.2.9.1/include -Iinclude
+CFLAGS := -g -Wall -Wextra -I/opt/homebrew/Cellar/allegro/5.2.9.1/include -Iinclude
 
 # Define library paths in addition to /usr/lib
 LDFLAGS = -L/opt/homebrew/Cellar/allegro/5.2.9.1/lib
