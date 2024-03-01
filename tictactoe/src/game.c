@@ -80,7 +80,6 @@ void monitor_game(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, ALLEGRO_EVEN
 		}
 		if (check_for_draw(game) == 1) {
 			printf("Game ended in a draw...\n");
-			//display_winner_banner(display);
 			get_mouse_click_event(event_queue);
 			break;
 		}
