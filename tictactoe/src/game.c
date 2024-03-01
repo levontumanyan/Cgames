@@ -71,8 +71,8 @@ void monitor_game(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, ALLEGRO_EVEN
 		printf("Check winning condition returned: %u\n", check_winning_condition(game));
 		if (check_winning_condition(game) == 1) {
 			printf("Winner is: player: %u\n", game->turn);
+			display_winner_banner(display);
 			get_mouse_click_event(event_queue);
-			display_winner_banner();
 			break;
 		}
 		// Flip the turn

@@ -1,4 +1,7 @@
 #include "user_interface.h"
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 
 ALLEGRO_MOUSE_EVENT get_mouse_click_event(ALLEGRO_EVENT_QUEUE *event_queue) {
 	ALLEGRO_EVENT ev;
@@ -58,19 +61,12 @@ void draw_board(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap) {
 	al_flip_display();
 }
 
-void draw_x(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap,unsigned char row, unsigned char col) {
+void draw_x(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, unsigned char row, unsigned char col) {
 	// set bitmap as the target for drawing
 	al_set_target_bitmap(bitmap);
 
-	// Calculate the size of each cell
-	int width = al_get_display_width(display);
-	int height = al_get_display_height(display);
-
-	int start_x = width / 2 - SQUARE_DIMENSION * CELL_WIDTH;
-	int start_y = height / 2 - SQUARE_DIMENSION * CELL_HEIGHT;
-
-	int cell_start_x = start_x + col * CELL_WIDTH;
-	int cell_start_y = start_y + row * CELL_HEIGHT;
+	int cell_start_x = START_X + col * CELL_WIDTH;
+	int cell_start_y = START_Y + row * CELL_HEIGHT;
 	
 	al_draw_line(cell_start_x, cell_start_y, cell_start_x + CELL_WIDTH, cell_start_y + CELL_HEIGHT, al_map_rgb(255, 255, 0), 1);
 	al_draw_line(cell_start_x, cell_start_y + CELL_HEIGHT, cell_start_x + CELL_WIDTH, cell_start_y, al_map_rgb(255, 255, 0), 1);
@@ -86,15 +82,8 @@ void draw_o(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, unsigned char row,
 	// set bitmap as the target for drawing
 	al_set_target_bitmap(bitmap);
 
-	// Calculate the size of each cell
-	int width = al_get_display_width(display);
-	int height = al_get_display_height(display);
-
-	int start_x = width / 2 - SQUARE_DIMENSION * CELL_WIDTH;
-	int start_y = height / 2 - SQUARE_DIMENSION * CELL_HEIGHT;
-
-	int cell_center_x = start_x + col * CELL_WIDTH + CELL_WIDTH / 2;
-	int cell_center_y = start_y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
+	int cell_center_x = START_X + col * CELL_WIDTH + CELL_WIDTH / 2;
+	int cell_center_y = START_Y + row * CELL_HEIGHT + CELL_HEIGHT / 2;
 
 	al_draw_circle(cell_center_x, cell_center_y, (CELL_HEIGHT / 2), al_map_rgb(255, 255, 0), 1);
 	
@@ -102,5 +91,37 @@ void draw_o(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, unsigned char row,
 	al_set_target_backbuffer(display);
 
 	al_draw_bitmap(bitmap, 0, 0, 0);
+	al_flip_display();
+}
+
+void display_winner_banner(ALLEGRO_DISPLAY *display){
+	// required for the fonts
+	al_init_font_addon();
+	al_init_ttf_addon();
+
+	ALLEGRO_FONT *winner_font = al_load_font("fonts/NewYork.ttf", 24, 0);
+	if (!winner_font) {
+        printf("Error: Could not load font\n");
+        return;
+    }
+
+	// dynamically determine the size of the text and create the bitmap accordingly
+	char *winner_text = "Winner is you bitch";
+	int bbx, bby, bbw, bbh;
+	al_get_text_dimensions(winner_font, winner_text, &bbx, &bby, &bbw, &bbh);
+
+	ALLEGRO_BITMAP *winner_text_bitmap = al_create_bitmap(bbw, bbh);
+
+	// set bitmap as the target for drawing
+	al_set_target_bitmap(winner_text_bitmap);
+
+	ALLEGRO_COLOR yellow = al_map_rgb(255, 156, 0);
+	// different approach here. Instead of drawing to the bitmap as the whole screen, we will draw into it as a separate entity then decide where on the screen to place it
+	al_draw_text(winner_font, yellow, 0, 0, 0, winner_text);
+
+	// Reset the target back to the display
+	al_set_target_backbuffer(display);
+
+	al_draw_bitmap(winner_text_bitmap, END_X + 50, END_Y + 50, 0);
 	al_flip_display();
 }
