@@ -16,7 +16,7 @@ Regular tictactoe rules
 - add a computer option to play vs bot
 
 ## Done
-
+- add a condition for the game to end in draw if all the boxes have been filled and no winner so far
 
 ## Bugs at the moment
 
