@@ -96,3 +96,15 @@ unsigned char check_winning_condition_diagonal_right_left(Game *game) {
 
 	return 0;
 }
+
+// check if the game is over as a draw - when all the boxes are filled and no winner has been determined, returns 0 if no draw, 1 if draw
+unsigned char check_for_draw(Game *game) {
+	for (unsigned char row = 0; row < SQUARE_DIMENSION; row++) {
+		for (unsigned char col = 0; col < SQUARE_DIMENSION; col++) {
+			if (game->board[row][col] == 2) {
+				return 0;
+			}
+		}
+	}
+	return 1; // draw
+}

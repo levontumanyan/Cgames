@@ -40,10 +40,12 @@ Game *start_game() {
 void monitor_game(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, ALLEGRO_EVENT_QUEUE *event_queue, Game *game) {
 	draw_board(display, bitmap);
 	ALLEGRO_MOUSE_EVENT click_event;
+	unsigned short mouse_click_x;
+	unsigned short mouse_click_y;
 	while(1) {
 		click_event = get_mouse_click_event(event_queue);
-		unsigned short mouse_click_x = click_event.x; 
-		unsigned short mouse_click_y = click_event.y;
+		mouse_click_x = click_event.x; 
+		mouse_click_y = click_event.y;
 		Cell clicked_cell = get_cell_from_click_event(display, click_event);
 		
 		// here check if the cell is already filled up and don't draw over it
@@ -68,10 +70,17 @@ void monitor_game(ALLEGRO_DISPLAY *display, ALLEGRO_BITMAP *bitmap, ALLEGRO_EVEN
 			game->board[clicked_cell.row][clicked_cell.col] = 1;
 			draw_x(display, bitmap, clicked_cell.row, clicked_cell.col);
 		}
+
 		printf("Check winning condition returned: %u\n", check_winning_condition(game));
 		if (check_winning_condition(game) == 1) {
 			printf("Winner is: player: %u\n", game->turn);
-			display_winner_banner(display);
+			//display_winner_banner(display);
+			get_mouse_click_event(event_queue);
+			break;
+		}
+		if (check_for_draw(game) == 1) {
+			printf("Game ended in a draw...\n");
+			//display_winner_banner(display);
 			get_mouse_click_event(event_queue);
 			break;
 		}
