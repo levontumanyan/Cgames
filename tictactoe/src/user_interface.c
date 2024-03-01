@@ -12,6 +12,22 @@ ALLEGRO_MOUSE_EVENT get_mouse_click_event(ALLEGRO_EVENT_QUEUE *event_queue) {
 	}
 }
 
+Cell get_cell_from_click_event(ALLEGRO_DISPLAY *display, ALLEGRO_MOUSE_EVENT click_event) {
+	Cell cell = { 255, 255 };
+	
+	// check if click is out of bounds
+	if (check_click_out_of_bounds(display, click_event) == 1) {
+		return cell;
+	}
+	
+	// get the row first - depends on the y coordinate
+	unsigned char row = ((click_event.y - START_Y) / CELL_HEIGHT);
+	unsigned char col = ((click_event.x - START_X) / CELL_WIDTH);
+	cell = (Cell) { row, col };
+
+	return cell;
+}
+
 // return 1 if out ouf bounds and 0 otherwise
 unsigned char check_click_out_of_bounds(ALLEGRO_DISPLAY *display, ALLEGRO_MOUSE_EVENT click_event) {
 	if (click_event.x > START_X && click_event.x < END_X && click_event.y > START_Y && click_event.y < END_Y) {

@@ -6,9 +6,6 @@
 #include <unistd.h>
 #include <allegro5/allegro.h>
 
-#include "utils.h"
-#include "user_interface.h"
-
 // revisit this later in case if rectangle is also acceptable
 #define SQUARE_DIMENSION 3
 
