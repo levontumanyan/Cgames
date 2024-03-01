@@ -8,7 +8,7 @@ OBJ_DIR := bin
 BIN_DIR := bin
 
 # Define any libraries to link into executable:
-LIBS = -lallegro -lallegro_main -lallegro_primitives
+LIBS = -lallegro -lallegro_main -lallegro_primitives -lallegro_font -lallegro_ttf
 
 # Define the C source and object files
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
