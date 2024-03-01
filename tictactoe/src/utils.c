@@ -19,3 +19,14 @@ ALLEGRO_DISPLAY* initialize_display() {
 
 	return display;
 }
+
+unsigned char random_zero_or_one() {
+	srand(time(0)); // Use current time as seed for random generator
+	return rand() % 2; // Modulo operation to get either 0 or 1
+}
+
+void destroy_all(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_DISPLAY* display, ALLEGRO_BITMAP *bitmap) {
+	al_unregister_event_source(event_queue, al_get_mouse_event_source());
+	al_destroy_display(display);
+	al_destroy_bitmap(bitmap);
+}
