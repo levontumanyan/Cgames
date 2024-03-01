@@ -11,6 +11,7 @@ make
 Regular tictactoe rules
 
 ## Todos
+- add an option to quit the game without control c
 - add a way for the player to choose the dimensions of the board once the game starts (add some limits to this)
 - add a score and implement player 1, player 2
 - add a computer option to play vs bot
