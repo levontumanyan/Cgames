@@ -19,6 +19,7 @@ Regular tictactoe rules
 - add a condition for the game to end in draw if all the boxes have been filled and no winner so far
 
 ## Bugs at the moment
+- when trying to display a winning banner in the screen, right before a game is over. The last move that results in a win, gets shown for an instant then disappears
 
 
 ## Bugs resolved
