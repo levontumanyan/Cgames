@@ -31,6 +31,13 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c include/*.h
 $(TEST_TARGET): $(TEST_DIR)/test_runner.c $(TEST_SRC_FILES) $(TEST_FILES)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDFLAGS)
 
+.PHONY: tests
+tests: $(TEST_TARGET)
+
+# Rule to run the tests
+test: tests
+	./bin/test_runner
+
 .PHONY: clean
 clean:
 	rm $(OBJ_DIR)/*.o $(TARGET) $(TEST_TARGET) 
