@@ -24,3 +24,7 @@ void initialize_game(Game* game) {
 unsigned char get_user_input() {
 
 }
+
+void cleanup_game(ALLEGRO_DISPLAY* display) {
+	al_destroy_display(display);
+}

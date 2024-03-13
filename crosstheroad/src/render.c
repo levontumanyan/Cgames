@@ -2,24 +2,20 @@
 
 #include "render.h"
 
-ALLEGRO_DISPLAY* initialize_display() {
-	ALLEGRO_DISPLAY *display = NULL;
-
+void initialize_display(ALLEGRO_DISPLAY *display) {
 	if(!al_init()) {
 		fprintf(stderr, "failed to initialize allegro!\n");
-		return NULL;
+		return;
 	}
 
 	display = al_create_display(SCREEN_WIDTH, SCREEN_HEIGHT);
 	
 	if(!display) {
 		fprintf(stderr, "failed to create display!\n");
-		return NULL;
+		return;
 	}
 
 	al_clear_to_color(al_map_rgb(0,0,0));
-
-	return display;
 }
 
 void render_main_menu() {

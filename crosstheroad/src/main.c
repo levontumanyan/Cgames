@@ -6,10 +6,13 @@
 
 unsigned char main() {
 	Game game;
+	ALLEGRO_DISPLAY *display = NULL;
+
 	initialize_game(&game);
-	
+	initialize_display(display);
 
 	while(game.game_is_running) {
+		render_main_menu();
 		//show_main_menu();
 		// below should go into show main menu
 		unsigned char menu_not_active = 0;
@@ -28,6 +31,6 @@ unsigned char main() {
 		}
 	}
 
-	// cleanup_game();
+	cleanup_game(display);
 	return 0;
 }
