@@ -1,0 +1,3 @@
+typedef struct Chicken {
+
+} Chicken;
