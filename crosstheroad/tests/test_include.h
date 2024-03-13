@@ -20,3 +20,5 @@
 	} while(0)
 
 void test_initialize_game();
+void test_start_new_level_0();
+void test_start_new_level_1();
