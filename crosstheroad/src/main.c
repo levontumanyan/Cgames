@@ -11,7 +11,7 @@ unsigned char main() {
 		// show_main_menu();
 		// below should go into show main menu
 		unsigned char menu_not_active = 0;
-
+		
 		while(menu_not_active) {
 			Level new_level = start_new_level(&game);
 
