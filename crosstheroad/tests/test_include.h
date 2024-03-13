@@ -18,3 +18,5 @@
 			assert(condition); \
 		} \
 	} while(0)
+
+void test_initialize_game();
