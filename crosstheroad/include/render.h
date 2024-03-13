@@ -5,6 +5,6 @@
 #define SCREEN_HEIGHT 1024
 
 void initialize_display(ALLEGRO_DISPLAY *display);
-void render_main_menu();
+void draw_main_menu(ALLEGRO_BITMAP *main_menu);
 
 #endif

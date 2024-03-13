@@ -12,7 +12,9 @@ unsigned char main() {
 	initialize_display(display);
 
 	while(game.game_is_running) {
-		render_main_menu();
+		ALLEGRO_BITMAP *main_menu = NULL;
+
+		draw_main_menu(main_menu);
 		//show_main_menu();
 		// below should go into show main menu
 		unsigned char menu_not_active = 0;

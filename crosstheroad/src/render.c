@@ -18,6 +18,6 @@ void initialize_display(ALLEGRO_DISPLAY *display) {
 	al_clear_to_color(al_map_rgb(0,0,0));
 }
 
-void render_main_menu() {
-	
+void draw_main_menu(ALLEGRO_BITMAP *main_menu) {
+
 }
