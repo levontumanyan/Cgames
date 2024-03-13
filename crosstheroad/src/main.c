@@ -1,14 +1,16 @@
+#include <allegro5/allegro.h>
+
 #include "game.h"
 #include "level.h"
-
-#include <allegro5/allegro.h>
+#include "render.h"
 
 unsigned char main() {
 	Game game;
 	initialize_game(&game);
+	
 
 	while(game.game_is_running) {
-		// show_main_menu();
+		//show_main_menu();
 		// below should go into show main menu
 		unsigned char menu_not_active = 0;
 
