@@ -1,25 +1,30 @@
 #include "game.h"
 #include "level.h"
 
-int main() {
+#include <allegro5/allegro.h>
+
+unsigned char main() {
 	Game game;
 	initialize_game(&game);
 
 	while(game.game_is_running) {
 		// show_main_menu();
+		// below should go into show main menu
+		unsigned char menu_not_active = 0;
 
-		while(player_has_not_quit) {
+		while(menu_not_active) {
 			Level new_level = start_new_level(&game);
 
 			while (new_level.level_is_running) {
-				process_input();
+				//process_input();
 				//update_game_state();
 				//render_graphics();
 			}
-			
-			check_level_results();
+
+			// check_level_results();
 		}
 	}
 
-	cleanup_game();
+	// cleanup_game();
+	return 0;
 }
